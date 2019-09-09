@@ -150,10 +150,10 @@ title('Enthalpy and Mass Flow Rate')
 yyaxis left
 y = [Md_A(1:8); Md_B(1:8)]'
 
-ba = bar(y, .5 ,'stacked','FaceColor','flat')
+ba1 = bar(y, .5 ,'stacked','FaceColor','flat')
 ylabel('Mass Flow Rate (Kg/s)', 'Color' ,'k')
-ba(1).CData = [ 0 .4 1];
-ba(2).CData = [1 .4 0];
+ba1(1).CData = [ 0 .4 1];
+ba1(2).CData = [1 .4 0];
 
 yyaxis right
 plot(1:8, H_a(1:8), 'Color', [14/256 5/256 51/256], 'MarkerSize', 4, 'LineWidth',3)
