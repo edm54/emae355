@@ -149,7 +149,8 @@ ef_m = (m_dot - .26)./m_dot
 p_actual = 400*(m_dot/6.5)
 % Accounting for power loss due to valves
 p_actuator = (24 * 20/1000)/1000
-eff = ef_m .* (p_actual-p_actuator)./p_actual
+p_computer = .1 % average power of a computer, kWatts 
+eff = ef_m .* (p_actual-(p_actuator + p_computer))./p_actual
 
 %%
 figure
@@ -158,7 +159,7 @@ title('Enthalpy and Mass Flow Rate')
 yyaxis left
 y = [Md_A(1:8); Md_B(1:8)]'
 
-ba1 = bar(y, .5 ,'stacked','FaceColor','flat')
+ba1 = bar(y, .5 ,'stacked','FaceColor','flat');
 ylabel('Mass Flow Rate (Kg/s)', 'Color' ,'k')
 ba1(1).CData = [ 0 .4 1];
 ba1(2).CData = [1 .4 0];
