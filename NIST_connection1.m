@@ -2,8 +2,8 @@
 %load(refpropm)
 % First Value is startup condition
 %9 is a copy of 5 
-cond_name = ['1: T=-20', '2: T=-10', '3: T=0', '4: T=10', '5: T=20', '6: T=30' ...
-    '7: T=40', '8: T=50', 'Startup: T=20'];
+cond_name = ['1: T=-20 ', '2: T=-10 ', '3: T=0 ', '4: T=10 ', '5: T=20 ', '6: T=30 ' ...
+    '7: T=40 ', '8: T=50 ', 'Startup: T=20 '];
 Ambient= [ -20, -10, 0, 10, 20, 30, 40, 50, 20];
 T1 = [ -20,-10, 0 ,10, 20, 30, 40, 50, 20];
 T2 = [-14, -2, 10,23, 38, 57, 71, 85, 27];
@@ -166,7 +166,9 @@ legend('Mdot A', 'Mdot B','H3', 'H4', 'H final')
 %set(p, {'color'}, {[115/256 75/256 247/256]; [56/256 9/256 209/256] ; [27/256 1/256 111/256]});
 %colors = hsv(5);
 %set(p, {'color'}, num2cell(colors, 5));
-xlabel(cond_name)
+xticklabels({'1: T=-20 ', '2: T=-10 ', '3: T=0 ', '4: T=10 ', '5: T=20 ', '6: T=30 ' ...
+    '7: T=40 ', '8: T=50 ', 'Startup: T=20 '})
+xlabel('State (Ambient Condition)')
 ylabel('Enthalpy (kJ/kG)',  'Color' ,'k')
 
 disp('hi')
