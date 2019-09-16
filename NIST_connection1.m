@@ -144,6 +144,14 @@ for state = 1:length(T1)
     Cv_b(state)= 46250.9*Cd*D_b(state)^2
 end
 %%
+% Efficiency calculations
+ef_m = (m_dot - .26)./m_dot 
+p_actual = 400*(m_dot/6.5)
+% Accounting for power loss due to valves
+p_actuator = (24 * 20/1000)/1000
+eff = ef_m .* (p_actual-p_actuator)./p_actual
+
+%%
 figure
 title('Enthalpy and Mass Flow Rate')
 
@@ -171,7 +179,4 @@ xticklabels({'1: T=-20 ', '2: T=-10 ', '3: T=0 ', '4: T=10 ', '5: T=20 ', '6: T=
 xlabel('State (Ambient Condition)')
 ylabel('Enthalpy (kJ/kG)',  'Color' ,'k')
 
-disp('hi')
-disp('carter')
-disp('carter')
 %yylabel('Enthalpy')
