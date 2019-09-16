@@ -134,7 +134,7 @@ ba1(2).CData = [1 .4 0];
 yyaxis right
 plot(1:9, H_a(1:9), 'Color', [0/256 0/256 245/256], 'MarkerSize', 4, 'LineWidth',3)
 hold on
-%56/256 9/256 209/256
+
 plot(1:9, H_b(1:9), 'Color', [1,0,0], 'MarkerSize', 4, 'LineWidth',3)
 hold on 
 p = plot(1:9, H_final(1:9),'Color', [27/256 1/256 111/256],'MarkerSize' , 4, 'LineWidth',3)
