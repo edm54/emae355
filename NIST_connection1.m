@@ -142,5 +142,6 @@ legend('Mdot 3', 'Mdot 4','H3', 'H4', 'H final')
 
 xticklabels({'1: T=-20 ', '2: T=-10 ', '3: T=0 ', '4: T=10 ', '5: T=20 ', '6: T=30 ' ...
     '7: T=40 ', '8: T=50 ', 'Startup: T=20 '})
+xtickangle(45)
 xlabel('State (Ambient Condition)')
 ylabel('Enthalpy (kJ/kG)',  'Color' ,'k')
