@@ -28,8 +28,8 @@ P2k = P2 * 1000;
 
 % Determine initial Enthalpy, Entropy
 for state = 1:length(T1)
-    H_a(state) = refpropm('H','T',T3K(state),'P',P2k(state),'CO2');
-    S_a(state) = refpropm('S','T',T3K(state),'P',P2k(state),'CO2');
+    H_a(state) = refpropm('H','T',T2K(state),'P',P2k(state),'CO2');
+    S_a(state) = refpropm('S','T',T2K(state),'P',P2k(state),'CO2');
     
     H_b(state) = refpropm('H','T',T4K(state),'P',P2k(state),'CO2');
     S_b(state) = refpropm('S','T',T4K(state),'P',P2k(state),'CO2');  
