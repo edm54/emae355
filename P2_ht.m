@@ -18,13 +18,13 @@ Dynamic_V = refpropm('V','T',Ti,'P',101, 'Air.ppf');
 %  $   Kinematic viscosity [cm^2/s], Nu
 kin_v = refpropm('$','T',Ti,'P',101, 'Air.ppf');
 kin_v = kin_v /100^2 ;
-kin_v = 26.4e-6;
+%kin_v = 26.4e-6;
 %Kin_v = Dynamic_v/rho
 
 %   Thermal diffusivity [cm^2/s], alpha
 alp = refpropm('%','T',Ti,'P',101, 'Air.ppf');
 alp = alp/ 100^2;
-alp = 38.3e-6;
+%alp = 38.3e-6;
 
 %L   Thermal conductivity [W/(m K)]
 k = refpropm('L','T',Ti,'P',101, 'Air.ppf')
@@ -48,8 +48,8 @@ l_flat = area_flat./ [perimeter_flat];
 % Total area of 4 vertical walls
 area_vert = [.65/2]; %meter2;
 perimeter_vert = 8.32/2;
-l_vert = [perimeter_vert]./ area_vert;
-
+%l_vert = [perimeter_vert]./ area_vert;
+l_vert = .085 %m
 %% Vertical Walls
 t_vert = 7*60; %sec
 [q_vertical, Q_vertical] = vertical_wall_convection(Ts, Ti, t_vert, l_vert,  area_vert)
@@ -93,7 +93,7 @@ t_vert_n = 6 * 60
 t_bottom = 2 * 60
 t_top = 1.5 * 60
 %newly polished could be .2
-[q_rad_n, Q_rad_n] = radiation(Ts, Ti, t_rad_n , 2.*area_vert, .2);
+[q_rad_n, Q_rad_n] = radiation(Ts, Ti, t_rad_n , 2.*area_vert, .145);
 [q_vertical_n, Q_vertical_n] = vertical_wall_convection(Ts, Ti, t_vert_n,  l_vert, area_vert)
 [q_top_n, Q_top_n] = free_convection_down(Ts, Ti, t_top, l_flat, area_flat);
 [q_bottom_n, Q_bottom_n] = free_convection_up(Ts, Ti, t_bottom, l_flat, area_flat)
@@ -102,21 +102,40 @@ t_top = 1.5 * 60
 %%
 Q_absolute_total = Q_forced + Q_bottom + Q_float ...
                  + Q_top + 2*Q_vertical + Q_rad + Q_forced_pipe
-
+             
+             
+Q_old_top = Q_float_t + Q_top + .5 * Q_rad + Q_forced + Q_vertical + Q_float_b
+Q_old_bot = Q_bottom + Q_vertical + .5 * Q_rad + Q_forced_pipe
+     
 Q_new_total = Q_forced  + Q_bottom_n + Q_float ...
                  + Q_top_n + 2*Q_vertical_n + Q_rad_n
+             
+Q_new_top = Q_float_t + Q_top_n + .5 * Q_rad_n + Q_forced + Q_vertical_n +Q_float_b 
+Q_new_bot = Q_bottom_n + Q_vertical_n + .5 * Q_rad_n           
 
 savings = (Q_absolute_total - Q_new_total)/Q_absolute_total
      
 Q_loss = Q_absolute_total - Q_new_total
 
 
-
-
+% t = subplot(2,1, 1);
+% ax1 = nexttile;
+% pie(ax1,[Q_forced Q_bottom Q_float ...
+%                  Q_top  2*Q_vertical  Q_rad, Q_forced_pipe])
+% legend('Forced', 'Bottom' , 'Float', 'Top', 'Vertical', 'Radiation', 'Forced Pipe')
+% title('Old')
+% 
+% ax2 = nexttile;
+% pie(ax2,[Q_forced Q_bottom_n Q_float ...
+%                  Q_top_n  2*Q_vertical_n  Q_rad_n Q_loss], [0 0 0 0 0 0 1])
+% legend('Forced', 'Bottom' , 'Float', 'Top', 'Vertical', 'Radiation', 'Savings')
+% title('New')
+%%
 figure
 %labels = {'Forced', 'Bottom' , 'Float', 'Top', 'Vertical', 'Radiation', 'Forced Pipe'}
 pie([Q_forced Q_bottom Q_float ...
                  Q_top  2*Q_vertical  Q_rad, Q_forced_pipe])
+colormap([241/256 240/256 1; 52/256 190/256 235/256; 52/256 147/256 235/256; 110/256 52/256, 235/256; 0 18/256 105/256;  81/256 81/256 122/256; 0 0 0])
 legend('Forced', 'Bottom' , 'Float', 'Top', 'Vertical', 'Radiation', 'Forced Pipe')
 
 title('Original Heat Transfer')
@@ -124,6 +143,8 @@ title('Original Heat Transfer')
 figure
 pie([Q_forced Q_bottom_n Q_float ...
                  Q_top_n  2*Q_vertical_n  Q_rad_n Q_loss], [0 0 0 0 0 0 1])
+colormap([241/256 240/256 1; 52/256 190/256 235/256; 52/256 147/256 235/256; 110/256 52/256, 235/256; 0 18/256 105/256;  81/256 81/256 122/256; 1 1 1])
+
 legend('Forced', 'Bottom' , 'Float', 'Top', 'Vertical', 'Radiation', 'Savings')
 title('New Heat Transfer')
 
@@ -145,7 +166,25 @@ min_machines = 24/time_saved + 1;
 heat_loss_daily_original = Q_absolute_total * total_toys_per_machine * 8;
 heat_loss_daily_new = Q_new_total * total_toys_per_machine * 7;
 
+daily_amount_saved = heat_loss_daily_original - heat_loss_daily_new
+
 total_savings = (heat_loss_daily_original - heat_loss_daily_new)/heat_loss_daily_original
+
+%% Payback:
+% an electricity rate of 6¢/kWhr for use in the payback period estimate
+% TODO:
+machines = 8
+cost_pin = 4.72
+soln_cost = 30 * machines * cost_pin + 350 % Dollars (240 pins plus a bucket) for 8 machines
+e_cost = .06 % Dollars/kWhr
+
+% TODO: UNITS, this assumes daily amount saved is in joules
+energy_save_day = daily_amount_saved/3.600e6 
+daily_money_saved = .06 * energy_save_day
+days_to_even = soln_cost/daily_money_saved
+
+
+
 %%
 function[q_vert, Q_total ] = vertical_wall_convection(Ts,Ti,time, l_vert, area_vert)
 global alp kin_v Pr k g B
@@ -215,10 +254,10 @@ function [q_pipe_convection, Q_pipe_convection] = forced_pipe_convection(Ts, Ti,
     D = 5/1000; %m --> 5mm
     length = 30/1000; %--> 30 mm
     Re = rho * V * D/Dynamic_V;
-    
-    Nu = .023 * Re^.8 * Pr^.4
+
+    Nu = .023 * Re^.8 * Pr^.4;
     h = Nu * k/ D % w/m^2 K
-    area_affected = pi * D * length
+    area_affected = pi * D * length;
     q_pipe_convection = 30 *h .* area_affected * (Ts - Ti); % watts 
     Q_pipe_convection = q_pipe_convection * time;
 
