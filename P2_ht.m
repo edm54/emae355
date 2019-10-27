@@ -112,31 +112,36 @@ Q_new_bot = Q_bottom_n + Q_vertical_n + .5 * Q_rad_n
 
 savings = (Q_old_total - Q_new_total)/Q_old_total     
 Q_loss = Q_old_total - Q_new_total
-
-heat_loss_daily_original = Q_old_total * cycles * 7;
-heat_loss_daily_new = Q_new_total * cycles * 6;
+cycles = 24 * 60 /7;
+%heat_loss_daily_original = Q_old_total * cycles * 7;
+%heat_loss_daily_new = Q_new_total * cycles * 6;
+heat_loss_daily_original = Q_old_total * cycles ;
+heat_loss_daily_new = Q_new_total * cycles ;
+heat_loss_daily_savings = heat_loss_daily_original - heat_loss_daily_new
 
 %%
 figure
 %labels = {'Forced', 'Bottom' , 'Float', 'Top', 'Vertical', 'Radiation', 'Forced Pipe'}
-pie([Q_forced Q_bottom Q_float ...
-                 Q_top  2*Q_vertical  Q_rad, Q_forced_pipe])
-colormap([241/256 240/256 1; 52/256 190/256 235/256; 52/256 147/256 235/256;...
-         110/256 52/256, 235/256; 0 18/256 105/256;  81/256 81/256 122/256; 0 0 0])
-legend('Forced: Spraying Air', 'Bottom Plate: Top Surface' , 'Top Plate: Both Surfaces', ...
-        'Top Plate: Bottom Surface', 'Free Convection: Vertical Walls', 'Radiation', ...
-        'Forced: Air Through Platten')
+h1 = pie([Q_forced Q_bottom  Q_top  Q_float 2*Q_vertical Q_rad Q_forced_pipe])
+colormap([230/256 230/256 .98; 52/256 190/256 235/256; ...
+          70/256 130/256 235/256; 0/256 50/256 190/256; 0 18/256 105/256;  0/256 0/256 55/256; 1 1 1])
+legend('Forced: Spraying Air', ...
+       'Bottom Plate: Top Surface' , 'Top Plate: Bottom Surface',  ...
+       'Top Plate: Both Surfaces', 'Free Convection: Vertical Walls', ...
+       'Radiation', 'Forced: Air Through Platten')
+set(h1(2:2:end),'FontSize',16)
 
 title('Original Heat Transfer Distribution')
 
 figure
-pie([Q_forced Q_bottom_n Q_float Q_top_n  2*Q_vertical_n  Q_rad_n Q_loss],...
+h2 = pie([Q_forced Q_bottom_n  Q_top_n Q_float 2*Q_vertical_n  Q_rad_n Q_loss],...
     [0 0 0 0 0 0 1])
-colormap([241/256 240/256 1; 52/256 190/256 235/256; 52/256 147/256 235/256;...
-          110/256 52/256, 235/256; 0 18/256 105/256;  81/256 81/256 122/256; 1 1 1])
+colormap([230/256 230/256 .98; 52/256 190/256 235/256; ...
+          70/256 130/256 235/256; 0/256 50/256 190/256; 0 18/256 105/256;  0/256 0/256 55/256; .97 .97 1])
 legend('Forced: Spraying Air', 'Bottom Plate: Top Surface' , ...
-       'Top Plate: Both Surfaces', 'Top Plate: Bottom Surface', ...
+       'Top Plate: Bottom Surface', 'Top Plate: Both Surfaces', ...
        'Free Convection: Vertical Walls', 'Radiation', 'Savings')
+set(h2(2:2:end),'FontSize',16)
 title('New Heat Transfer Distribution')
 
 figure
@@ -159,19 +164,20 @@ min_machines = 24/time_saved;
 
 daily_amount_saved_pm = (heat_loss_daily_original - heat_loss_daily_new)/7
 cycles = total_toys_per_machine/30
-total_savings = ((heat_loss_daily_original - heat_loss_daily_new)/heat_loss_daily_original)/7
-
+total_savings1 = ((7*heat_loss_daily_original - 6*heat_loss_daily_new)/7)
+daily_amount_saved_pm = total_savings1
+total_savings = ((7*heat_loss_daily_original - 6*heat_loss_daily_new)/(7*heat_loss_daily_original))
 %% Payback:
 % an electricity rate of 6¢/kWhr for use in the payback period estimate
 machines = 1; % Does not effect final answer
 cost_pin = 4.72; 
-surface_area_needed = .75 * machines; % would be .65 but assume some overspray/leakage
-bucket_cost = 750; % Dollars per bucket 
-coverage = 185.81; %m2
+surface_area_needed = 1.3 * machines; % would be .65 but assume some overspray/leakage
+bucket_cost = 760; % Dollars per bucket 
+coverage = 116.1288; %m2 this is 1250 sqft
 coating_cost = bucket_cost * surface_area_needed/coverage;
-possible_machines = 185.81/.75;
+possible_machines = coverage/1.3
 
-soln_cost = 30 * machines * cost_pin + coating_cost; % Dollars (240 pins plus a bucket) for 8 machines
+soln_cost = 30 * machines * cost_pin + coating_cost + 75; % Dollars (240 pins plus a bucket) for 8 machines
 e_cost = .06; % Dollars/kWhr
 
 % Convert Joules to kWhr
