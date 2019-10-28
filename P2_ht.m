@@ -119,38 +119,6 @@ heat_loss_daily_original = Q_old_total * cycles ;
 heat_loss_daily_new = Q_new_total * cycles ;
 heat_loss_daily_savings = heat_loss_daily_original - heat_loss_daily_new
 
-%%
-figure
-%labels = {'Forced', 'Bottom' , 'Float', 'Top', 'Vertical', 'Radiation', 'Forced Pipe'}
-h1 = pie([Q_forced Q_bottom  Q_top  Q_float 2*Q_vertical Q_rad Q_forced_pipe])
-colormap([230/256 230/256 .98; 52/256 190/256 235/256; ...
-          70/256 130/256 235/256; 0/256 50/256 190/256; 0 18/256 105/256;  0/256 0/256 55/256; 1 1 1])
-legend('Forced: Spraying Air', ...
-       'Bottom Plate: Top Surface' , 'Top Plate: Bottom Surface',  ...
-       'Top Plate: Both Surfaces', 'Free Convection: Vertical Walls', ...
-       'Radiation', 'Forced: Air Through Platten')
-set(h1(2:2:end),'FontSize',16)
-
-title('Original Heat Transfer Distribution')
-
-figure
-h2 = pie([Q_forced Q_bottom_n  Q_top_n Q_float 2*Q_vertical_n  Q_rad_n Q_loss],...
-    [0 0 0 0 0 0 1])
-colormap([230/256 230/256 .98; 52/256 190/256 235/256; ...
-          70/256 130/256 235/256; 0/256 50/256 190/256; 0 18/256 105/256;  0/256 0/256 55/256; .97 .97 1])
-legend('Forced: Spraying Air', 'Bottom Plate: Top Surface' , ...
-       'Top Plate: Bottom Surface', 'Top Plate: Both Surfaces', ...
-       'Free Convection: Vertical Walls', 'Radiation', 'Savings')
-set(h2(2:2:end),'FontSize',16)
-title('New Heat Transfer Distribution')
-
-figure
-pie([q_forced q_bottom q_float ...
-                 q_top  2*q_vertical  q_rad, q_forced_pipe])
-legend('Forced: Spraying Air', 'Bottom Plate: Top Surface' , 'Top Plate: Both Surfaces', ...
-        'Top Plate: Bottom Surface', 'Free Convection: Vertical Walls', 'Radiation', ...
-        'Forced: Air Through Platten')
-title('Original q Distribution')
 
 %%
 total_toys_per_machine = 30 * 24 * 60 /7;
@@ -164,8 +132,8 @@ min_machines = 24/time_saved;
 
 daily_amount_saved_pm = (heat_loss_daily_original - heat_loss_daily_new)/7
 cycles = total_toys_per_machine/30
-total_savings1 = ((7*heat_loss_daily_original - 6*heat_loss_daily_new)/7)
-daily_amount_saved_pm = total_savings1
+total_savings1 = ((7*heat_loss_daily_original - 6*heat_loss_daily_new)/6)
+cycle_amt_saved = total_savings1/cycles
 total_savings = ((7*heat_loss_daily_original - 6*heat_loss_daily_new)/(7*heat_loss_daily_original))
 %% Payback:
 % an electricity rate of 6¢/kWhr for use in the payback period estimate
@@ -184,7 +152,65 @@ e_cost = .06; % Dollars/kWhr
 energy_save_day = daily_amount_saved_pm/3.600e6;
 daily_money_saved = machines * .06 * energy_save_day;
 days_to_even = soln_cost/daily_money_saved;
+%% Plotting
+figure
+%labels = {'Forced', 'Bottom' , 'Float', 'Top', 'Vertical', 'Radiation', 'Forced Pipe'}
+h1 = pie([Q_forced Q_bottom  Q_top  Q_float 2*Q_vertical Q_rad Q_forced_pipe])
+colormap([230/256 230/256 .98; 52/256 190/256 235/256; ...
+          70/256 130/256 235/256; 0/256 50/256 190/256; 0 18/256 105/256;  0/256 0/256 55/256; 1 1 1])
+leg = legend('Forced: Spraying Air', ...
+       'Bottom Plate: Top Surface' , 'Top Plate: Bottom Surface',  ...
+       'Top Plate: Both Surfaces', 'Free Convection: Vertical Walls', ...
+       'Radiation', 'Forced: Air Through Platten')
 
+leg.FontSize = 14;   
+set(h1(2:2:end),'FontSize',16)
+title('Single Cycle Original Heat Transfer Distribution')
+ax = gca;
+ax.TitleFontSizeMultiplier = 1.6;
+
+
+Q_L1 = daily_amount_saved_pm/cycles
+
+figure
+h2 = pie([Q_forced Q_bottom_n  Q_top_n Q_float 2*Q_vertical_n  Q_rad_n cycle_amt_saved],...
+    [0 0 0 0 0 0 1])
+colormap([230/256 230/256 .98; 52/256 190/256 235/256; ...
+          70/256 130/256 235/256; 0/256 50/256 190/256; 0 18/256 105/256;  0/256 0/256 55/256; .97 .97 1])
+leg = legend('Forced: Spraying Air', 'Bottom Plate: Top Surface' , ...
+       'Top Plate: Bottom Surface', 'Top Plate: Both Surfaces', ...
+       'Free Convection: Vertical Walls', 'Radiation', 'Savings')
+
+leg.FontSize = 14;
+
+set(h2(2:2:end),'FontSize',16)
+title('New Heat Transfer Distribution with Increased Productivity')
+ax = gca;
+ax.TitleFontSizeMultiplier = 1.8;
+
+
+figure
+pie([q_forced q_bottom q_float ...
+                 q_top  2*q_vertical  q_rad, q_forced_pipe])
+legend('Forced: Spraying Air', 'Bottom Plate: Top Surface' , 'Top Plate: Both Surfaces', ...
+        'Top Plate: Bottom Surface', 'Free Convection: Vertical Walls', 'Radiation', ...
+        'Forced: Air Through Platten')
+title('Original q Distribution')
+
+figure
+h2 = pie([Q_forced Q_bottom_n  Q_top_n Q_float 2*Q_vertical_n  Q_rad_n Q_loss],...
+    [0 0 0 0 0 0 1])
+colormap([230/256 230/256 .98; 52/256 190/256 235/256; ...
+          70/256 130/256 235/256; 0/256 50/256 190/256; 0 18/256 105/256;  0/256 0/256 55/256; .97 .97 1])
+legend('Forced: Spraying Air', 'Bottom Plate: Top Surface' , ...
+       'Top Plate: Bottom Surface', 'Top Plate: Both Surfaces', ...
+       'Free Convection: Vertical Walls', 'Radiation', 'Savings')
+set(h2(2:2:end),'FontSize',16)
+title('Single Cycle New Heat Transfer Distribution')
+ax = gca;
+ax.TitleFontSizeMultiplier = 1.6;
+
+%%
 % Free convection from vertical walls
 function[q_vert, Q_total ] = vertical_wall_convection(Ts,Ti,time, l_vert, area_vert)
 global alp kin_v Pr k g B
@@ -198,7 +224,7 @@ end
 % Forced convection from spraying air over surface
 function [q_forced, Q_total] = forced_convection(Ts, Ti, time, L_forced, area_forced)
     global kin_v Pr k 
-    velo2=100; %m/s
+    velo2=20; %m/s
     Rex = velo2 * L_forced/kin_v;
     nusselt_forced = .0296 * Rex ^.8 * Pr ^(1/3);
     h_forced = nusselt_forced * k./L_forced;
@@ -236,7 +262,7 @@ end
 function [q_pipe_convection, Q_pipe_convection] = forced_pipe_convection(Ts, Ti, time)
     global rho Pr k
     Dynamic_V = refpropm('V','T',Ti,'P',101, 'Air.ppf');
-    V = 50; %m/s, average
+    V = 25; %m/s, average
     D = 5/1000; %m --> 5mm
     length = 30/1000; %m --> 30 mm
     Re = rho * V * D/Dynamic_V;
