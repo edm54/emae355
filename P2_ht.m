@@ -81,7 +81,7 @@ t_forced_t= 45; % naturally convect same
 %% Radiation losses
 t_rad = 7 * 60;
 % emissivity estimated to be .4 from Dr. Hostler
-[q_rad, Q_rad] = radiation(Ts, Ti, t_rad, 2.*area_vert, .4);
+[q_rad, Q_rad] = radiation(Ts, Ti, t_rad, 2.*area_vert, .45);
 
 %% Forced Convection from air flowing through platen
 t_f = 5 %sec
@@ -152,6 +152,13 @@ e_cost = .06; % Dollars/kWhr
 energy_save_day = daily_amount_saved_pm/3.600e6;
 daily_money_saved = machines * .06 * energy_save_day;
 days_to_even = soln_cost/daily_money_saved;
+%%
+full_day_old = 7 * cycles * Q_old_total
+new_cycles = 7 * cycles/ 6
+full_day_new = 6 * new_cycles * Q_new_total
+savings_new = (full_day_old - full_day_new)/full_day_old
+
+
 %% Plotting
 figure
 %labels = {'Forced', 'Bottom' , 'Float', 'Top', 'Vertical', 'Radiation', 'Forced Pipe'}
@@ -170,23 +177,23 @@ ax = gca;
 ax.TitleFontSizeMultiplier = 1.6;
 
 
-Q_L1 = daily_amount_saved_pm/cycles
+%Q_L1 = daily_amount_saved_pm/cycles
 
-figure
-h2 = pie([Q_forced Q_bottom_n  Q_top_n Q_float 2*Q_vertical_n  Q_rad_n cycle_amt_saved],...
-    [0 0 0 0 0 0 1])
-colormap([230/256 230/256 .98; 52/256 190/256 235/256; ...
-          70/256 130/256 235/256; 0/256 50/256 190/256; 0 18/256 105/256;  0/256 0/256 55/256; .97 .97 1])
-leg = legend('Forced: Spraying Air', 'Bottom Plate: Top Surface' , ...
-       'Top Plate: Bottom Surface', 'Top Plate: Both Surfaces', ...
-       'Free Convection: Vertical Walls', 'Radiation', 'Savings')
-
-leg.FontSize = 14;
-
-set(h2(2:2:end),'FontSize',16)
-title('New Heat Transfer Distribution with Increased Productivity')
-ax = gca;
-ax.TitleFontSizeMultiplier = 1.8;
+% figure
+% h2 = pie([Q_forced Q_bottom_n  Q_top_n Q_float 2*Q_vertical_n  Q_rad_n cycle_amt_saved],...
+%     [0 0 0 0 0 0 1])
+% colormap([230/256 230/256 .98; 52/256 190/256 235/256; ...
+%           70/256 130/256 235/256; 0/256 50/256 190/256; 0 18/256 105/256;  0/256 0/256 55/256; .97 .97 1])
+% leg = legend('Forced: Spraying Air', 'Bottom Plate: Top Surface' , ...
+%        'Top Plate: Bottom Surface', 'Top Plate: Both Surfaces', ...
+%        'Free Convection: Vertical Walls', 'Radiation', 'Savings')
+% 
+% leg.FontSize = 14;
+% 
+% set(h2(2:2:end),'FontSize',16)
+% title('New Heat Transfer Distribution with Increased Productivity')
+% ax = gca;
+% ax.TitleFontSizeMultiplier = 1.8;
 
 
 figure
