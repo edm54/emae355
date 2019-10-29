@@ -97,7 +97,8 @@ t_top = 1.5 * 60;
 
 %% Savings calculations
 Q_old_total = Q_forced + Q_bottom + Q_float ...
-                 + Q_top + 2*Q_vertical + Q_rad + Q_forced_pipe;          
+                 + Q_top + 2*Q_vertical + Q_rad + Q_forced_pipe;   
+             
 Q_old_top = Q_float_t + Q_top + .5 * Q_rad + Q_forced + Q_vertical + Q_float_b;
 Q_old_bot = Q_bottom + Q_vertical + .5 * Q_rad + Q_forced_pipe;
      
@@ -138,11 +139,11 @@ coverage = 116.1288; %m2 this is 1250 sqft
 coating_cost = bucket_cost * surface_area_needed/coverage;
 possible_machines = coverage/1.3;
 
-soln_cost = 30 * machines * cost_pin + coating_cost + 75; % Dollars (240 pins plus a bucket) for 8 machines
+soln_cost = 30 * machines * cost_pin + coating_cost + 70; % Dollars (240 pins plus a bucket) for 8 machines
 e_cost = .06; % Dollars/kWhr
 
 % Convert Joules to kWhr
-energy_save_day = daily_amount_saved_pm/3.600e6;
+energy_save_day = heat_loss_daily_savings/3.600e6;
 daily_money_saved = machines * .06 * energy_save_day;
 days_to_even = soln_cost/daily_money_saved;
 %%
@@ -157,15 +158,14 @@ figure
 %labels = {'Forced', 'Bottom' , 'Float', 'Top', 'Vertical', 'Radiation', 'Forced Pipe'}
 h1 = pie([Q_forced Q_bottom  Q_top  Q_float 2*Q_vertical Q_rad Q_forced_pipe]);
 colormap([230/256 230/256 .98; 52/256 190/256 235/256; ...
-          70/256 130/256 235/256; 0/256 50/256 190/256; 0 18/256 115/256;  0/256 0/256 55/256; 1 1 1]);
+          70/256 130/256 235/256; 0/256 50/256 190/256; 0 18/256 105/256;  0/256 0/256 55/256; 1 1 1]);
 leg = legend('Forced: Spraying Air', ...
        'Bottom Plate: Top Surface' , 'Top Plate: Bottom Surface',  ...
        'Top Plate: Both Surfaces', 'Free Convection: Vertical Walls', ...
        'Radiation', 'Forced: Air Through Platten');
-
 leg.FontSize = 14;   
-set(h1(2:2:end),'FontSize',16);
-title('Single Cycle Original Heat Transfer Distribution');
+set(h1(2:2:end),'FontSize',12);
+title('Original Heat Transfer Distribution');
 ax = gca;
 ax.TitleFontSizeMultiplier = 1.6;
 
@@ -183,14 +183,24 @@ figure
 h2 = pie([Q_forced Q_bottom_n  Q_top_n Q_float 2*Q_vertical_n  Q_rad_n Q_loss],...
     [0 0 0 0 0 0 1]);
 colormap([230/256 230/256 .98; 52/256 190/256 235/256; ...
-          70/256 130/256 235/256; 0/256 50/256 190/256; 0 18/256 115/256;  0/256 0/256 55/256; .97 .97 1])
-legend('Forced: Spraying Air', 'Bottom Plate: Top Surface' , ...
+          70/256 130/256 235/256; 0/256 50/256 190/256; 0 18/256 110/256;  0/256 0/256 55/256; .97 .97 1])
+leg = legend('Forced: Spraying Air', 'Bottom Plate: Top Surface' , ...
        'Top Plate: Bottom Surface', 'Top Plate: Both Surfaces', ...
        'Free Convection: Vertical Walls', 'Radiation', 'Savings');
-set(h2(2:2:end),'FontSize',16);
-title('Single Cycle New Heat Transfer Distribution');
+leg.FontSize = 14;   
+set(h2(2:2:end),'FontSize',14);
+title('Heat Transfer Distribution With Solution');
 ax = gca;
 ax.TitleFontSizeMultiplier = 1.6;
+%%
+figure
+h2 = pie([Q_forced Q_bottom_n  Q_top_n Q_float 2*Q_vertical_n  Q_rad_n ]);
+colormap([230/256 230/256 .98; 52/256 190/256 235/256; ...
+          70/256 130/256 235/256; 0/256 50/256 190/256; 0 18/256 110/256;  0/256 0/256 55/256])
+leg = legend('Forced: Spraying Air', 'Bottom Plate: Top Surface' , ...
+       'Top Plate: Bottom Surface', 'Top Plate: Both Surfaces', ...
+       'Free Convection: Vertical Walls', 'Radiation');
+title('Heat Transfer with Solution, No Savings')
 
 %%
 % Free convection from vertical walls
