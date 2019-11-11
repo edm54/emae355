@@ -8,10 +8,12 @@ Temp = -20 + 273
 % from 0 c to 250c 
 
 
-p = 4e3 : 1e2 : 60e3 
+p = 1e3 : .25e3 : 20e3; 
 
 %p = 4e3 : 1e3 : 60e3 
-t = 0 + 273:.5:250 + 273
+t = 0 + 273:1:250 + 273;
+h = 100e3 : 2e3: 700e3;
+
 %[X,Y] = meshgrid(p,t)
 
 gas1 = []
@@ -20,34 +22,46 @@ liquid1 = [];
 liquid2 = [];
 sup1 = [];
 sup2 = [];
-
+mixed1 = [];
+mixed2 = [];
 
 for i = 1:length(p)
-    for j = 1:length(t)
-        Q(i,j) = refpropm('Q','T',t(j), 'P',p(i), 'CO2');
-        X(i,j) = refpropm('X','T',t(j), 'P',p(i), 'CO2');
-        if Q(i,j) < .5
+    for j = 1:length(h)
+%         Q(i,j) = refpropm('Q','T',t(j), 'P',p(i), 'CO2');
+%         X(i,j) = refpropm('X','T',t(j), 'P',p(i), 'CO2');
+        Q(i,j) = refpropm('Q','H',h(j), 'P',p(i), 'CO2');
+        X(i,j) = refpropm('X','H',h(j), 'P',p(i), 'CO2');
+        if Q(i,j) < .01 
             liquid1 = [p(i) liquid1 ];
-            liquid2 = [t(j) liquid2 ];
-        elseif Q(i,j) == 998 || Q(i,j) == -998 || (Q(i,j) > .5 && Q(i,j)< 5)
+            liquid2 = [h(j) liquid2 ];
+        elseif Q(i,j) >= .01 && Q(i,j) <=1
+            mixed1 = [p(i) mixed1 ];
+            mixed2 = [h(j) mixed2 ];
+        elseif Q(i,j) == 998 || Q(i,j) == -998 || (Q(i,j) > 1 && Q(i,j)< 5)
             gas1 = [p(i) gas1 ];
-            gas2 = [t(j) gas2 ];
+            gas2 = [h(j) gas2 ];
         else
-            
             sup1 = [p(i) sup1 ];
-            sup2 = [t(j) sup2 ];
+            sup2 = [h(j) sup2 ];
         end
     end
 end
 %%
+figure
 scatter(liquid2, liquid1  ,[], 'red', 'DisplayName', 'Liquid')
 hold on
 scatter(gas2, gas1, [], 'blue', 'DisplayName', 'Gas')
 hold on
 scatter(sup2, sup1, [], [.9 .5 0], 'DisplayName', 'Super Critical')
-title('CO2 Vapor Dome')
-xlabel('Temperature (Kelvin)')
+hold on
+scatter(mixed2, mixed1, [], [.5 .5 .5], 'DisplayName', 'Super Mixed')
+% xlabel('Temperature (Kelvin)')
+xlabel('Enthalpy')
 ylabel('Pressure (kPa)')
-legend
+title('CO2 Vapor Dome')
+legend('Liquid', 'Gas', 'Super Critical', 'Mixed')
+
+
+
 
 
