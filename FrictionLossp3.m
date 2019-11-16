@@ -23,7 +23,7 @@ e_d_ratio = roughness/1000 * diameter;
 
 temp = (15 + 129)/2 + 273;
 area = pi * (diameter/2)^2 ;
-md = 3.24:.1:12
+md = 3.24:.1:18
 i = 1
 % up 
 % for m_dot = 3.24:.1:17
@@ -74,15 +74,15 @@ i = 1
 % xlabel('Mass Flow Rate (kg/s)')
 % ylabel('Friction Head (m)')
 %% 
-leg =20:10:50%pascals, can set this one
-p3_val = 10e6:20e6:100e6
+leg =30:100:525%pascals, can set this one
+% p3_val = 10e6:20e6:100e6
 i = 1
 k = 1e-12 ;% 
 A = 20 ;% m^-1
 L = 112 ;% m
 Pa = 32.5e6 ;
 Tb = 129 + 273; % Temp at bottom
-for p3  = 20e6:10e6:50e6
+for p3  = 30e6:100e6:525e6
     for j = 1:length(md)
 %         dynamic_v_top = refpropm('V','T',temp,'P',p6/1e3, 'CO2');
 %         rho(i,j) = refpropm('D','T',temp,'P',p6/1e3, 'CO2');

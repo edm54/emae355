@@ -15,11 +15,11 @@ function [current_pressure, pressure_loss, gravity_gain] = pressure_drop_up(m_do
     current_pressure = pressure1;
     
     i = 1;
-    R = 188.92 % Ideal gas Constant
+    R = 188.92; % Ideal gas Constant
     %rho1 = refpropm('D','T',temp,'P',current_pressure/1e3, 'CO2');
     pressure_loss = 0;
     delta_l = 100;
-    gravity_gain = 0
+    gravity_gain = 0;
     % Start at top
     % when each range covers h  --> h + delta_l
     for height = 0 : delta_l : 3200 - delta_l
@@ -30,9 +30,15 @@ function [current_pressure, pressure_loss, gravity_gain] = pressure_drop_up(m_do
         velo1 = m_dot/(rho1(i) * area);
         velo(i) = m_dot/(rho1(i) * area);
         reynolds = rho1(i) * velo1 * diameter/dynamic_v1;
-        f1 = -1.8 * log10((6.9 / reynolds) + (e_d_ratio/ 3.7)^1.); % turb only
-        f(i) = (1/f1)^2;
-
+        
+        if reynolds >= 4000
+            f1 = -1.8 * log10((6.9 / reynolds) + (e_d_ratio/ 3.7)^1.); % turb only
+            f(i) = (1/f1)^2;
+        else
+            f(i) = 64/reynolds
+        end
+        
+        
         head_loss(i) = (f(i) * delta_l * velo1^2) / (diameter * 2  * gravity);
         pressure_drop(i) = rho1(i) * gravity * head_loss(i); %pa
         pressure_loss = pressure_loss + pressure_drop(i);
