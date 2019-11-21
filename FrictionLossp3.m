@@ -82,30 +82,11 @@ A = 20 ;% m^-1
 L = 112 ;% m
 Pa = 32.5e6 ;
 Tb = 129 + 273; % Temp at bottom
-for p3  = 30e6:100e6:525e6
+p3 = 50e6
+md = 10
+for p3  = 50e6
     for j = 1:length(md)
-%         dynamic_v_top = refpropm('V','T',temp,'P',p6/1e3, 'CO2');
-%         rho(i,j) = refpropm('D','T',temp,'P',p6/1e3, 'CO2');
-%         %rho(i,j) = 400
-%         velo_up = (md(j) - 3.24) /(rho(i,j) * area);
-%         velo_down = md(j)/(rho(i,j) * area);
-%         reynolds_up = rho(i,j) * velo_up * diameter/dynamic_v_top ;
-%         reynolds_down = rho(i,j) * velo_down * diameter/dynamic_v_top ;
-% 
-%         f1_up = -1.8 * log10((6.9 / reynolds_up) + (e_d_ratio/ 3.7)^1.);
-%         f_up(i,j) = (1/f1_up)^2;
-% 
-%         f1_down = -1.8 * log10((6.9 / reynolds_down) + (e_d_ratio/ 3.7)^1.);
-%         f_down(i,j) = (1/f1_down)^2;
-% 
-%         head_loss_up(i,j) = (f_up(i,j) * L1 * velo_up^2) / (diameter * 2  * gravity);
-%         pressure_drop_up(i,j) = rho(i,j) * gravity * head_loss_up(i,j); %pa
-% 
-%         head_loss_down(i,j) = (f_down(i,j) * L1 * velo_down^2) / (diameter * 2  * gravity);
-%         pressure_drop_down(i,j) = rho(i,j) * gravity * head_loss_down(i,j); %pa      
-%         
         [p4(i,j), press_drop_down(i,j), gravity_gain_down(i,j)] = pressure_drop_down(md(j), p3);
-        %p4(i,j) = p3 - press_drop_down(i,j) + gravity_gain;
         
         density(i,j) = refpropm('D','T',Tb,'P',p4(i,j)/ 1e3, 'CO2');
         dynamic_v(i,j) = refpropm('V','T',Tb,'P',p4(i,j)/1e3, 'CO2');
@@ -114,30 +95,11 @@ for p3  = 30e6:100e6:525e6
         Q(i,j) = final_mdot(j) / density(i,j);
         delta_p(i,j) = Q(i,j) * dynamic_v(i,j) * L/(k*A);
         
-        % + pa
         p5(i,j) = p4(i,j) - delta_p(i,j);
-        [p6(i,j), press_drop_up(i,j), gravity_loss_up(i,j)] = pressure_drop_up(final_mdot(j), p5(i,j));
-        %press_drop_up(i,j) = pressure_drop_up(md(j)-3.24, p4(i,j));
-        
-        %p6 = p5(i,j) - press_drop_up(i,j) - gravity_gain
-        
+        [p6(i,j), press_drop_up(i,j), gravity_loss_up(i,j)] = pressure_drop_up(final_mdot(j), p5(i,j));   
         final_delta_p(i,j) = p3 - p6(i,j) ;
         
-    end
-%     for j = 1:length(md)
-%       
-%         p5(i,j) = p6 + pressure_drop_up(i,j);
-%         
-%         density(i,j) = refpropm('D','T',Tb,'P',p5(i,j)/ 1e3, 'CO2');
-%         dynamic_v(i,j) = refpropm('V','T',Tb,'P',p5(i,j)/1e3, 'CO2');
-%       
-%         final_mdot(j) = md(j) - 3.24;
-%         Q(i,j) = final_mdot(j) / density(i,j);
-%         delta_p(i,j) = Q(i,j) * dynamic_v(i,j) * L/(k*A);
-%         p4(i,j) = Pa + delta_p(i,j);
-%         gravity_gain = 0; % TODO
-%         p3(i,j) = p4(i,j) + pressure_drop_down(i,j) + gravity_gain;
-%     end
+    end 
     i = i+1
 end
 %%

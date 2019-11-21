@@ -30,22 +30,28 @@ function [current_press, pressure_loss, gravity_gain] = pressure_drop_down(m_dot
     % 0 definited as top surface
     % 3200 defined as underground
     i = 2
+    
+    temperature(1) = 15 + 273
     for height = 0 : delta_l : 3200 - delta_l
+        
+        %temperature(i) = HT(m_dot, current_pressure(i-1) + current_pressure(i-1) ...
+         %   -current_pressure(i-2), temperature(i-1));
         temp = interp1(len, temp_range, height + .5 *delta_l, 'linear');
+        
+        
         dynamic_v1 = refpropm('V','T',temp,'P',current_pressure(i-1)/1e3, 'CO2');
         rho1(i) = refpropm('D','T',temp,'P',current_pressure(i-1)/1e3, 'CO2');
         
         velo1 = m_dot/(rho1(i) * area);
-        reynolds = rho1(i) * velo1 * diameter/dynamic_v1;
+        reynolds(i) = rho1(i) * velo1 * diameter/dynamic_v1;
         
-        if reynolds >= 4000
-            f1 = -1.8 * log10((6.9 / reynolds) + (e_d_ratio/ 3.7)^1.); % turb only
+        if reynolds(i) >= 4000
+            f1 = -1.8 * log10((6.9 / reynolds(i)) + (e_d_ratio/ 3.7)^1.); % turb only
             f(i) = (1/f1)^2;
         else
-            f(i) = 64/reynolds
+            f(i) = 64/reynolds(i)
         end
         
-
         head_loss(i) = (f(i) * delta_l * velo1^2) / (diameter * 2  * gravity);
         pressure_drop(i) = rho1(i) * gravity * head_loss(i); %pa
         pressure_loss = pressure_loss + pressure_drop(i);
@@ -65,21 +71,27 @@ function [current_press, pressure_loss, gravity_gain] = pressure_drop_down(m_dot
         i = i + 1;
     end
    
-    
     temp = interp1(len, temp_range, height + .5 *delta_l, 'linear');
     %rho1(i) = refpropm('D','T',temp,'P',current_pressure(i-1)/1e3, 'CO2');
     hgl2 = current_pressure(i-1)/(rho1(i-1) * gravity); 
     hgl3 = cp2(i-1)/(rho1(i-1) * gravity); 
-    disp(hgl1)
-    disp(hgl2)
-    disp(hgl3)
-    figure
-    plot(0 : delta_l : 3200 , current_pressure)
-    hold
-    plot(0 : delta_l : 3200 , cp2)
-    legend('Bern Comp', 'Bern  Incomp')
-    title('Pressure vs distance down pipe')
-%      disp(pressure_loss)
+%     disp(hgl1)
+%     disp(hgl2)
+%     disp(hgl3)
+%     figure
+%     plot(0 : delta_l : 3200 , current_pressure)
+%     hold
+%     plot(0 : delta_l : 3200 , cp2)
+%     legend('Bern Comp', 'Bern  Incomp')
+%     title('Pressure vs distance down pipe')
+% %      disp(pressure_loss)
     current_press = current_pressure(end)
+    
+    figure
+    plot( 0 : delta_l : 3200 - delta_l, reynolds(2:end) )
+    title('Reynolds Down')
+    ylabel('Reynolds')
+    xlabel('Height')
+    
 end
 

@@ -29,13 +29,13 @@ function [current_pressure, pressure_loss, gravity_gain] = pressure_drop_up(m_do
         
         velo1 = m_dot/(rho1(i) * area);
         velo(i) = m_dot/(rho1(i) * area);
-        reynolds = rho1(i) * velo1 * diameter/dynamic_v1;
+        reynolds(i) = rho1(i) * velo1 * diameter/dynamic_v1;
         
-        if reynolds >= 4000
-            f1 = -1.8 * log10((6.9 / reynolds) + (e_d_ratio/ 3.7)^1.); % turb only
+        if reynolds(i) >= 4000
+            f1 = -1.8 * log10((6.9 / reynolds(i)) + (e_d_ratio/ 3.7)^1.); % turb only
             f(i) = (1/f1)^2;
         else
-            f(i) = 64/reynolds
+            f(i) = 64/reynolds(i)
         end
         
         
@@ -60,5 +60,12 @@ function [current_pressure, pressure_loss, gravity_gain] = pressure_drop_up(m_do
 %     disp(pressure_loss)
 %     disp(velo)
 %      disp(pressure_loss)
+
+figure
+    plot( 0 : delta_l : 3200 - delta_l, reynolds() )
+    title('Reynolds Up')
+    ylabel('Reynolds')
+    xlabel('Height')
+
 end
 
