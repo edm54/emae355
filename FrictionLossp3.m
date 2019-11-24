@@ -86,6 +86,8 @@ p3 = 50e6
 md = 10
 for p3  = 50e6
     for j = 1:length(md)
+        
+        
         [p4(i,j), press_drop_down(i,j), gravity_gain_down(i,j)] = pressure_drop_down(md(j), p3);
         
         density(i,j) = refpropm('D','T',Tb,'P',p4(i,j)/ 1e3, 'CO2');

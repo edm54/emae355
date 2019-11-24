@@ -1,7 +1,11 @@
-function Tfluid = HT(mdot,pressure,temp_b)
+function Tfluid = HT(mdot,pressure,temp,tob)
 % The function takes a mass flow rate, initial fluid pressure, and
-% temperature.
-% The result is the net heat transfer.
+% temperature coming out of the pump. 
+% tob is a factor for going up or down the pipe
+% tob = 1 goes from the compressor/pump down the well and tob = 2 goes up
+% the pipe
+% The result is the fluid temperature at each specified depth, accounting
+% for changes in pressure. 
 
 %% Values
 r0_in = 0.0610; %m
@@ -13,44 +17,62 @@ k_steel = 60.5; %W/mK @300K in textbook tables
 r2 = (r0_in+t_steel);
 r3 = r0_in+t_steel+t_conc;
 L = 3200; %depth 
+R = 188.92; %specific gas constant CO2
+A = (r0_in)^2*pi/2; %pipe area
 
-%% Boundary Conditions
-T0 = 288;
-Tco2 = temp_b; %initial CO2 temperature, in the "slice" below
-P0 = 6;
-Tf = 402;
-Pf = 32.5;
-Tm = (15 + 129)/2 + 273; %mean temperature 
+Tbot = 129+273; % initial pipe surface temperature (ground temp) at bottom
+Ttop = 15+273; %top temp
+Tco2 = temp; %initial CO2 temperature
 Tgrad = 0.30875 ; % temperature gradient in K/m
 
 %%
+step_size = .5
 i = 1;
-if i = 1:
-    e(i) = 230; % random assumed value for enthalpy
-    T(i) = 288; % assumed value for fluid temperature 
+Pfluid = linspace(60*1000,30*1000,6401);
 
-    enthalpy(i) = refpropm('H','T',Tco2,'P',pressure,'CO2');
-    Pfluid(i) = pressure;
-    Tsurf(i) = T0;
-    Tfluid(i) = Tco2;
-    i = i+1;
-    
-else
-    Tsurf(i) = T0 + Tgrad*x;
-    Pfluid(i) = pressure_drop_down(mdot, pressure);
-
-    % ITERATION NEEDED FOR TEMPERATURE OF FLUID
-    while diff > 0 
-        e(i) = (T(i) - Tfluid(i-1))/mdot + enthalpy(i-1); % steady state constant heat transfer rate
-        enthalpy(i) = refpropm('H','T',T(i),'P',Pfluid(i),'CO2');
-        diff = e(i)- enthalpy(i);
+if tob == 1
+    for x = 0:step_size:L
+        if x == 0
+            Pfluid(i) = pressure;
+            Tsurf(i) = Ttop;
+            Tfluid(i) = Tco2;
+            i = i+1;
+        else
+            Tsurf(i) = Ttop + Tgrad*x;
+            
+            Rtot = (log(r2/r0_in)/k_steel)+(log(r3/r2)/k_conc)+(log(r0_out/r3)/k_steel);
+            
+            enthalpy(i-1) = refpropm('H','T',Tfluid(i-1),'P',Pfluid(i),'CO2');
+            enthalpy(i) = (Tsurf(i)-Tfluid(i-1))/(Rtot*mdot) + enthalpy(i-1);
+            
+            Pfluid(i) = pressure_drop_down_one(mdot, Pfluid(i-1), step_size, Tfluid(i-1));
+            
+            Tfluid(i) = refpropm('T','H',enthalpy(i),'P',Pfluid(i),'CO2');
+            
+            i = i+1;
+        end
     end
+else if tob == 2
+        for x = 0:.5:L
+            if x == 0
+                Pfluid(i) = pressure;
+                Tsurf(i) = Tbot;
+                Tfluid(i) = Tco2;
+                i = i+1;
+            else
+                Tsurf(i) = Tbot - Tgrad*x;
+                
+                Rtot = (log(r2/r0_in)/k_steel)+(log(r3/r2)/k_conc)+(log(r0_out/r3)/k_steel);
 
-    Tfluid(i) = refpropm('T','H',enthalpy(i),'P',Pfluid(i),'CO2');
-    q(i) = (2*pi*x*(Tsurf(i)-Tfluid(i)))/((log(r2/r0_in)/k_steel)+(log(r3/r2)/k_conc)+(log(r0_out/r3)/k_steel));
-    i = i+1;
-    
-end
-
-
+                enthalpy(i-1) = refpropm('H','T',Tfluid(i-1),'P',Pfluid(i),'CO2');
+                enthalpy(i) = (Tsurf(i)-Tfluid(i-1))/(Rtot*mdot) + enthalpy(i-1);
+                
+                [Pfluid(i), pressure_loss(i), gravity_gain(i)] = pressure_drop_up(mdot, Pfluid(i-1));
+            
+                Tfluid(i) = refpropm('T','H',enthalpy(i),'P',Pfluid(i),'CO2');
+                
+                i = i+1;
+            end
+        end
+    end
 end

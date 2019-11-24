@@ -38,7 +38,6 @@ function [current_press, pressure_loss, gravity_gain] = pressure_drop_down(m_dot
          %   -current_pressure(i-2), temperature(i-1));
         temp = interp1(len, temp_range, height + .5 *delta_l, 'linear');
         
-        
         dynamic_v1 = refpropm('V','T',temp,'P',current_pressure(i-1)/1e3, 'CO2');
         rho1(i) = refpropm('D','T',temp,'P',current_pressure(i-1)/1e3, 'CO2');
         
