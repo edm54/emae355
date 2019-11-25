@@ -68,9 +68,11 @@ for i= 1:length(P2)
     for j=1:length(m2)
           m3(j)= m1+m2(j);
         %Big Function
-      
+%               [P5(i,j), T5(i,j), P3(i,j), T3(i,j), P4(i,j), T4(i,j)]...
+%             = findP5(P2(i),m3(j));
         try
-        [P5(i,j), T5(i,j)] = findP5(P2(i),m3(j));
+        [P5(i,j), T5(i,j), P3(i,j), T3(i,j), P4(i,j), T4(i,j)]...
+            = findP5(P2(i),m3(j));
         catch ME
 %           P5(i,j)=NaN;
 %           T5(i,j)=NaN;
@@ -243,7 +245,7 @@ ylabel('Specific Diameter')
 legend('.8 eff', '.7 eff',  'Calc')
 
 f2=figure;
-pl3=plot([60, 175, 350, 60] , [2.5 .85 .8 2.5], '-r'); %range for .8 for axial 
+pl3=plot([60, 175, 350, 60] , [2.85 .85 .8 2.85], '-r'); %range for .8 for axial 
 hold on
 pl4=plot([45, 150, 800, 45] , [4 .8 .6 4], '-b'); %range for .7 
 for a=1:length(Ns2comp)
