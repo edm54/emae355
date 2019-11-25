@@ -1,4 +1,7 @@
-clear all
+function [x] = plotVaporDome()
+%UNTITLED4 Summary of this function goes here
+%   Detailed explanation goes here
+
 Pressure = 1.11e+3 % kilapascals
 Pressure = 6e3
 Temp = -20 + 273
@@ -8,7 +11,7 @@ Temp = -20 + 273
 % from 0 c to 250c 
 
 
-p = 1e3 : .25e3 : 20e3; 
+p = 1e3 : .25e3 : 27.75e3; 
 
 %p = 4e3 : 1e3 : 60e3 
 t = 0 + 273:1:250 + 273;
@@ -47,7 +50,7 @@ for i = 1:length(p)
     end
 end
 %%
-figure
+x = figure
 scatter(liquid2, liquid1  ,[], 'red', 'DisplayName', 'Liquid')
 hold on
 scatter(gas2, gas1, [], 'blue', 'DisplayName', 'Gas')
@@ -64,4 +67,7 @@ legend('Liquid', 'Gas', 'Super Critical', 'Mixed')
 
 
 
+
+
+end
 

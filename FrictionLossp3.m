@@ -142,7 +142,7 @@ legend(legendCell)
 
 figure
 hold on 
-plot(md, friction_loss_down)
+plot(md, friction_loss_up)
 title('Pressure loss due to friction in a pipe, up')
 xlabel('Mass Flow Rate Down(kg/s)')
 ylabel('Pressure Drop (Pa)')

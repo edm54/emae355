@@ -56,7 +56,6 @@ function [cp, pressure_loss, gravity_gain_total, temp_final] = pressure_drop_up(
 
                 velo_diff = (velo2^2 - velo1^2)/2;
                 % Gravity
-                %velo_diff = 0; % If we do small enough where rho does not change signifcantly(?)
                 
                  p2 = current_pressure(i-1) * exp((-1/(R * temp(i))) * (velo_diff +  gravity * delta_l));
                  gg(i) = current_pressure(i-1) - p2; 
