@@ -19,8 +19,8 @@ h = 100e3 : 2e3: 700e3;
 
 %[X,Y] = meshgrid(p,t)
 
-gas1 = []
-gas2 = []
+gas1 = [];
+gas2 = [];
 liquid1 = [];
 liquid2 = [];
 sup1 = [];
@@ -63,11 +63,6 @@ xlabel('Enthalpy')
 ylabel('Pressure (MPa)')
 title('CO2 Vapor Dome')
 legend('Liquid', 'Gas', 'Super Critical', 'Mixed')
-
-
-
-
-
 
 end
 
