@@ -10,7 +10,7 @@ Tb = 129 + 273; % Temp at bottom
 density = refpropm('D','T',Tb,'P',p3/ 1e3, 'CO2');
 dynamic_v = refpropm('V','T',Tb,'P',p3/1e3, 'CO2');
 
-t3 = temp_down;
+t3 = temp_down(end);
 
 final_mdot = md - 3.24;
 Q = final_mdot/ density;
