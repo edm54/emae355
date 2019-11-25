@@ -1,9 +1,7 @@
 function [current_press, pressure_loss, gravity_gain, temp] = pressure_drop_down(m_dot, pressure1)
 %UNTITLED3 Summary of this function goes here
 %   Detailed explanation goes here
-    
    
-    temp_range = [15+273 129+273];
     len = [0 3200];
     L1 = 3.2 * 1000; % meters
     gravity = 9.81;
@@ -74,25 +72,7 @@ function [current_press, pressure_loss, gravity_gain, temp] = pressure_drop_down
            
         i = i + 1;
     end
-   
-    %rho1(i) = refpropm('D','T',temp,'P',current_pressure(i-1)/1e3, 'CO2');
-    %hgl2 = current_pressure(i-1)/(rho1(i-1) * gravity); 
-    %hgl3 = cp2(i-1)/(rho1(i-1) * gravity); 
-%     disp(hgl1)
-%     disp(hgl2)
-%     disp(hgl3)
-%     figure
-%     plot(0 : delta_l : 3200 , current_pressure)
-%     hold
-%     plot(0 : delta_l : 3200 , cp2)
-%     legend('Bern Comp', 'Bern  Incomp')
-%     title('Pressure vs distance down pipe')
-% %      disp(pressure_loss)
     current_press = current_pressure(end);
-      
-    
-%     figure
-%     plot(0 : delta_l : 3200, reynolds)
     
 end
 

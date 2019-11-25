@@ -1,10 +1,7 @@
-function [cp, pressure_loss, gravity_gain_total, temp_final, temp, gg, current_pressure] = pressure_drop_up(m_dot, pressure1)
+function [cp, pressure_loss, gravity_gain_total, temp_final] = pressure_drop_up(m_dot, pressure1)
 %UNTITLED3 Summary of this function goes here
 %   Detailed explanation goes here
    
-    temp_range = [129+273 15+273];
-    len = [0 3200];
-    L1 = 3.2 * 1000; % meters
     gravity = 9.81;
     diameter = 0.06096; % meter
     roughness = .05 ;% mm, from https://neutrium.net/fluid_flow/absolute-roughness/
@@ -19,14 +16,14 @@ function [cp, pressure_loss, gravity_gain_total, temp_final, temp, gg, current_p
     %rho1 = refpropm('D','T',temp,'P',current_pressure/1e3, 'CO2');
     pressure_loss = 0;
     delta_l = 1;
-    gravity_gain = 0;
-    t_bottom = 129 + 273
+    t_bottom = 129 + 273;
     temp(1) = t_bottom;
-    i = 2
+    i = 2;
     direction = 2;
+    gravity_gain = 0;
     % Start at bottom
     % when each range covers h  --> h + delta_l
-    current_pressure, pressure_loss, gravity_gain, temp_final = 0;
+    temp_final = 0;
     
     if m_dot > 0
         for height = 3200 - delta_l : -1 * delta_l : 0 
@@ -77,47 +74,8 @@ function [cp, pressure_loss, gravity_gain_total, temp_final, temp, gg, current_p
              i = i + 1;
         end
     end
-    
-%     disp(current_pressure)
-%     disp(gravity_gain)
-%     disp(pressure_loss)
-%     disp(velo)
-%      disp(pressure_loss)
-
-% figure
-%     plot( 0 : delta_l : 3200 - delta_l, reynolds() )
-%     title('Reynolds Up')
-%     ylabel('Reynolds')
-%     xlabel('Height')
     cp = current_pressure(end);
+    gravity_gain_total = gravity_gain(end);
     temp_final = temp(end);
-    
-    
-    figure
-    plot( 0 : delta_l : 3200, velo )
-    
-    
-    for i = 2:length(0 : delta_l : 3200)
-        dpa(i) = current_pressure(i-1) - current_pressure(i);
-        dp(i) = gg(i) + pressure_drop(i);
-        
-    end
-    
-        
-    figure
-    plot( 2:length(0 : delta_l : 3200), dpa(2:end) )
-    hold on 
-    plot( 2:length(0 : delta_l : 3200), dp(2:end))
-    legend('actual', 'gg+ pd')
-    
-    figure
-    plot( 2:length(0 : delta_l : 3200), dpa(2:end)- dp(2:end) )
-    title('dfifff fuk')
-    
-    disp(current_pressure(1)-current_pressure(end))
-    disp(gravity_gain+pressure_loss)
-    disp(sum(gg))
-    
-    gravity_gain_total = gravity_gain(end)
 end
 

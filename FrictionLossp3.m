@@ -34,24 +34,24 @@ A = 20 ;% m^-1
 L = 112 ;% m
 Pa = 32.5e6 ;
 Tb = 129 + 273; % Temp at bottom
-p3 = 20e6 :10e6:80e6;
+p2 = 20e6 :10e6:80e6;
 md = 3.24 : 1 : 15.24;
 %md = 10
 %for p3  = 20e6 :10e6:80e6
 md = 5
-for p3  = 40e6
+for p2  = 40e6
     for j = 1:length(md)
-        [p4(i,j), friction_loss_down(i,j), gravity_gain_down(i,j), temp_down] = pressure_drop_down(md(j), p3);       
-        density(i,j) = refpropm('D','T',Tb,'P',p4(i,j)/ 1e3, 'CO2');
-        dynamic_v(i,j) = refpropm('V','T',Tb,'P',p4(i,j)/1e3, 'CO2');
+        [p3(i,j), friction_loss_down(i,j), gravity_gain_down(i,j), temp_down] = pressure_drop_down(md(j), p2);       
+        density(i,j) = refpropm('D','T',Tb,'P',p3(i,j)/ 1e3, 'CO2');
+        dynamic_v(i,j) = refpropm('V','T',Tb,'P',p3(i,j)/1e3, 'CO2');
       
         final_mdot(j) = md(j) - 3.24;
         Q(i,j) = final_mdot(j) / density(i,j);
         delta_p(i,j) = Q(i,j) * dynamic_v(i,j) * L/(k*A);
         
-        p5(i,j) = p4(i,j) - delta_p(i,j);
-        [p6(i,j), friction_loss_up(i,j), gravity_loss_up(i,j), temp_top(i,j), temp_up, gg, current_p] = pressure_drop_up(final_mdot(j), p5(i,j));   
-        final_delta_p(i,j) = p3 - p6(i,j) 
+        p4(i,j) = p3(i,j) - delta_p(i,j);
+        [p5(i,j), friction_loss_up(i,j), gravity_loss_up(i,j), temp_top(i,j)] = pressure_drop_up(final_mdot(j), p4(i,j));   
+        final_delta_p(i,j) = p2 - p5(i,j) 
         
     end 
     i = i+1;
