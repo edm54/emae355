@@ -23,10 +23,10 @@ A = (r0_in)^2*pi/2; %pipe area
 Tbot = 129+273; % initial pipe surface temperature (ground temp) at bottom
 Ttop = 15+273; %top temp 
 Tco2 = Tfluid1; %initial CO2 temperature THIS INITIAL GUESS COMES FROM COMPRESSOR
-Tgrad = 0.30875 ; % temperature gradient in K/m
+Tgrad = 0.03562 ; % temperature gradient in K/m
 
 %%
-step_size; %will be used in convection calculation
+%will be used in convection calculation
 % step_size = .5
 % i = 1;
 % Pfluid = linspace(60*1000,30*1000,6401);
@@ -41,12 +41,12 @@ if direction == 1 %This is for starting at top and going to bottom
 %         else
             Tground = Ttop + Tgrad*height;
             
-            kfluid = refpropm('L','T',Tfluid1,'P',Pfluid1,'CO2'); %thermal conductivity of fluid
-            rho = refpropm('D','T',Tfluid1,'P',Pfluid1,'CO2'); %density
-            mu = refpropm('V','T',Tfluid1,'P',Pfluid1,'CO2'); %fluid viscosity Pa*s
-            mus = refpropm('V','T',Tground,'P',Pfluid1,'CO2'); %surface temp visc
+            kfluid = refpropm('L','T',Tfluid1,'P',Pfluid1/1e3,'CO2'); %thermal conductivity of fluid
+            rho = refpropm('D','T',Tfluid1,'P',Pfluid1/1e3,'CO2'); %density
+            mu = refpropm('V','T',Tfluid1,'P',Pfluid1/1e3,'CO2'); %fluid viscosity Pa*s
+            mus = refpropm('V','T',Tground,'P',Pfluid1/1e3,'CO2'); %surface temp visc
             
-            Pr = refpropm('^','T',Tfluid1,'P',Pfluid1,'CO2');
+            Pr = refpropm('^','T',Tfluid1,'P',Pfluid1/1e3,'CO2');
             V = mdot/(rho*A);
             Re = rho*V*step_size/mu;
             Nu = (0.27*Re^(4/5))*Pr^1/3*(mu/mus)^.14;           
@@ -56,12 +56,12 @@ if direction == 1 %This is for starting at top and going to bottom
                 (log(r0_out/r3)/k_steel)+(1/(h*A));            
             
             
-            enthalpy1 = refpropm('H','T',Tfluid1,'P',Pfluid1,'CO2');
+            enthalpy1 = refpropm('H','T',Tfluid1,'P',Pfluid1/1e3,'CO2');
             enthalpy2 = (Tground-Tfluid1)/(Rtot*mdot) + enthalpy1;
             
             %Pfluid2 = pressure_drop_down_one(mdot, Pfluid1, step_size, Tfluid1);
             
-            Tfluid2 = refpropm('T','H',enthalpy2,'P',Pfluid2,'CO2');
+            Tfluid2 = refpropm('T','H',enthalpy2,'P',Pfluid2/1e3,'CO2');
             
 %         end
 %     end
@@ -76,12 +76,12 @@ elseif direction == 2 %Going from bottom up
              Tground = Tbot - Tgrad*(L-height);
                 
                 
-            kfluid = refpropm('L','T',Tfluid1,'P',Pfluid1,'CO2'); %thermal conductivity of fluid
-            rho = refpropm('D','T',Tfluid1,'P',Pfluid1,'CO2'); %density
-            mu = refpropm('V','T',Tfluid1,'P',Pfluid1,'CO2'); %fluid viscosity Pa*s
-            mus = refpropm('V','T',Tground,'P',Pfluid1,'CO2'); %surface temp visc
+            kfluid = refpropm('L','T',Tfluid1,'P',Pfluid1/1e3,'CO2'); %thermal conductivity of fluid
+            rho = refpropm('D','T',Tfluid1,'P',Pfluid1/1e3,'CO2'); %density
+            mu = refpropm('V','T',Tfluid1,'P',Pfluid1/1e3,'CO2'); %fluid viscosity Pa*s
+            mus = refpropm('V','T',Tground,'P',Pfluid1/1e3,'CO2'); %surface temp visc
             
-            Pr = refpropm('^','T',Tfluid1,'P',Pfluid1,'CO2');
+            Pr = refpropm('^','T',Tfluid1,'P',Pfluid1/1e3,'CO2');
             V = mdot/(rho*A);
             Re = rho*V*step_size/mu;
             Nu = (0.27*Re^(4/5))*Pr^1/3*(mu/mus)^.14;           
@@ -90,15 +90,16 @@ elseif direction == 2 %Going from bottom up
             Rtot = (log(r2/r0_in)/k_steel)+(log(r3/r2)/k_conc)+...
                 (log(r0_out/r3)/k_steel)+(1/(h*A)); 
 
-                enthalpy1 = refpropm('H','T',Tfluid1,'P',Pfluid2,'CO2');
+                enthalpy1 = refpropm('H','T',Tfluid1,'P',Pfluid2/1e3,'CO2');
                 enthalpy2 = (Tground-Tfluid1)/(Rtot*mdot) + enthalpy1;
                 
                 %[Pfluid2, pressure_loss2, gravity_gain2] = pressure_drop_up(mdot, Pfluid1);
             
-                Tfluid2 = refpropm('T','H',enthalpy2,'P',Pfluid2,'CO2');
+                Tfluid2 = refpropm('T','H',enthalpy2,'P',Pfluid2/1e3,'CO2');
                 
                 
 %             end
 %         end
 end
+
 end
