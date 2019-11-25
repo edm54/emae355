@@ -1,4 +1,4 @@
-function [p5, t5, p3, p4, t3, t4] = findP5(p2,md)
+function [p5, t5, p3, t3, p4, t4] = findP5(p2,md)
 
 k = 1e-12 ;% 
 A = 20 ;% m^-1
