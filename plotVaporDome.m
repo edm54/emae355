@@ -50,7 +50,7 @@ for i = 1:length(p)
     end
 end
 %%
-x = figure
+x = figure;
 scatter(liquid2, liquid1  ,[], 'red', 'DisplayName', 'Liquid')
 hold on
 scatter(gas2, gas1, [], 'blue', 'DisplayName', 'Gas')
