@@ -1,4 +1,4 @@
-function [current_press, pressure_loss, gravity_gain, temp] = pressure_drop_down(m_dot, pressure1)
+function [current_press, pressure_loss, gravity_gain, temp] = pressure_drop_down(m_dot, pressure1, t_init)
 %UNTITLED3 Summary of this function goes here
 %   Detailed explanation goes here
    
@@ -28,8 +28,8 @@ function [current_press, pressure_loss, gravity_gain, temp] = pressure_drop_down
     % 0 definited as top surface
     % 3200 defined as underground
     i = 2;
-    t_initial = 50 + 273;
-    temp(1) = t_initial;
+
+    temp(1) = t_init;
     
     for height = 0 : delta_l : 3200 - delta_l
         
