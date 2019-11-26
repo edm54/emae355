@@ -58,12 +58,14 @@ P7=P1;
 s1= s(T1,P1);
 
 % Trading Variables
-P2= (22.5:2.5:27.5)*1e6; % Pa
-m2= 7:1:12; %kg/s
+P2= (50:30:110)*1e6; % Pa
+m2= 7:1:25; %kg/s
 Pratiocomp= P2/P1;
 
 figure
 legendstr= {};
+
+T2=ones(length(P2), length(m2))*303; %initial T2 estimate
 for i= 1:length(P2)
     for j=1:length(m2)
           m3(j)= m1+m2(j);
@@ -71,8 +73,14 @@ for i= 1:length(P2)
 %               [P5(i,j), T5(i,j), P3(i,j), T3(i,j), P4(i,j), T4(i,j)]...
 %             = findP5(P2(i),m3(j));
         try
-        [P5(i,j), T5(i,j), P3(i,j), T3(i,j), P4(i,j), T4(i,j)]...
-            = findP5(P2(i),m3(j));
+            if j==1
+            [P5(i,j), T5(i,j), P3(i,j), T3(i,j), P4(i,j), T4(i,j)]...
+                = findP5(P2(i),m3(j), T2(i,j));
+            else
+                
+            [P5(i,j), T5(i,j), P3(i,j), T3(i,j), P4(i,j), T4(i,j)]...
+                = findP5(P2(i),m3(j), T2(i,j-1));
+            end
         catch ME
 %           P5(i,j)=NaN;
 %           T5(i,j)=NaN;
@@ -140,8 +148,9 @@ for i= 1:length(P2)
 end
 legend(legendstr)
 xlabel('Mass Flow Through Turbine')
-ylabel('Net Power Created in Cycle (kW)')
+ylabel('Net Power (kW)')
 title('Power vs Mass Flow with varying Initial Pressures')
+%axis([ m2(1) m2(end) 0 100])
 grid
 
 figure
@@ -205,26 +214,26 @@ figure
 plot(N2, Ns2comp)
 hold on
 plot(N2, Ns2turb)
-xlabel('RPM')
-ylabel('Specific RPM')
+xlabel('RPM (N)')
+ylabel('Specific RPM (Ns)')
 legend('specN Pump', 'specN Turb')
-title('Specific RPM vs RPM')
+title(['Specific RPM vs RPM at P= ' num2str(P2(I)/1e6) 'MPa and m=' num2str(m2(J)) 'kg/s'])
 
 figure
 plot(D2, Ds2comp)
 hold on
 plot(D2, Ds2turb)
 xlabel('Diameter (m)')
-ylabel('Specific Diameter')
+ylabel('Specific Diameter (Ds)')
 legend('specD Pump', 'specD Turb')
-title('Specific Diameter vs Diameter')
+title(['Specific Diameter vs Diameter at P= ' num2str(P2(I)/1e6) 'MPa and m=' num2str(m2(J)) 'kg/s'])
 
 
 f1=figure;
 pl1=plot([100, 310, 40 100] , [1 .85 2 1], 'r-'); %Range for .8 eff
 hold on
 pl2=plot([20, 100, 800 20] , [4 .8 .8 4], 'b-'); %Range for .7 eff
-%plot([100 2000 6 100]  ,[.6 .6 7.5 .6], 'b-') %range for .6 eff
+pl123=plot([100 2000 6 100]  ,[.6 .6 7.5 .6], 'g-'); %range for .6 eff
 % plot(meshgrid(Ns2turb, Ds2turb))
 for a=1:length(Ns2turb)
     for b=1:length(Ds2turb)
@@ -235,19 +244,21 @@ end
 pl1=plot([100, 310, 40 100] , [1 .85 2 1], 'r-'); %Range for .8 eff
 hold on
 pl2=plot([20, 100, 800 20] , [4 .8 .8 4], 'b-'); %Range for .7 eff
+pl123=plot([100 2000 6 100]  ,[.6 .6 7.5 .6], 'g-'); %range for .6 eff
 hold on
 % copyobj(pl1, f1)
 % copyobj(pl2, f1)
 set(gca,'XScale','log','YScale','log')
 title('Turbine Trade Study')
-xlabel('Specific Speed')
-ylabel('Specific Diameter')
-legend('.8 eff', '.7 eff',  'Calc')
+xlabel('Specific Speed (Ns)')
+ylabel('Specific Diameter (Ds)')
+legend('.8 eff', '.7 eff', '.6 eff',  'Calc')
 
 f2=figure;
 pl3=plot([60, 175, 350, 60] , [2.85 .85 .8 2.85], '-r'); %range for .8 for axial 
 hold on
 pl4=plot([45, 150, 800, 45] , [4 .8 .6 4], '-b'); %range for .7 
+pl15= plot([2000 30 150 2000]   , [.5 5 .65 .5], 'g'); %range for .6
 for a=1:length(Ns2comp)
     for b=1:length(Ds2comp)
     plot(Ns2comp(a), Ds2comp(b), 'xk')
@@ -257,22 +268,29 @@ end
 pl3=plot([60, 175, 350, 60] , [2.85 .85 .8 2.85], '-r'); %range for .8 for axial 
 hold on
 pl4=plot([45, 150, 800, 45] , [4 .8 .6 4], '-b'); %range for .7 
-% copyobj(pl3, f2)
-% copyobj(pl4, f2)
+pl15= plot([2000 30 150 2000]   , [.5 5 .65 .5], 'g'); %range for .6% 
+
 title('Compressor Trade Study')
-xlabel('Specific Speed')
-ylabel('Specific Diameter')
-legend('.8 eff', '.7 eff', 'Calc')
+xlabel('Specific Speed (Ns)')
+ylabel('Specific Diameter (Ds)')
+legend('.8 eff', '.7 eff', '.6 eff', 'Calc')
 set(gca,'XScale','log','YScale','log')
 %Maybe multiple by 129
 
 %% P h diagram
 
-hvec= [h1 h2(I,J) h(T3(I,J),P3(I,J)) h(T4(I,J), P4(I,J)) h5(I,J) h6(I,J) h1];
+hvec= [h1 h2(I,J) h_T(T3(I,J),P3(I,J)) h_T(T4(I,J), P4(I,J)) h5(I,J) h6(I,J) h1];
 Pvec= [P1 P2(I) P3(I,J) P4(I,J) P5(I,J) P6 P1];
 
-figure
-plot(hvec/1000, Pvec/1e6)
+%figure
+fig= plotVaporDome();
+hold on
+for g=1:6
+    plot([hvec(g) hvec(g+1)], [Pvec(g)/1e6 Pvec(g+1)/1e6])
+    hold on
+end
+legend('Liquid' ,'Gas', 'Supercritical' ,'Mixed' ,'1-2', '2-3', '3-4', '4-5' ,'5-6', '6-1')
+%plot(hvec/1000, Pvec/1e6)
 xlabel('Enthaply (kJ/kg)')
 ylabel('Pressure (MPa)')
 title('P-h Power Cycle Diagram')
