@@ -2,9 +2,9 @@ function [x] = plotVaporDome()
 %UNTITLED4 Summary of this function goes here
 %   Detailed explanation goes here
 
-Pressure = 1.11e+3 % kilapascals
-Pressure = 6e3
-Temp = -20 + 273
+Pressure = 1.11e+3; % kilapascals
+Pressure = 6e3;
+Temp = -20 + 273;
 % 998 is gas
 % if Q < .5 liquid
 % pressure from 4 mpa to 60 mpa
