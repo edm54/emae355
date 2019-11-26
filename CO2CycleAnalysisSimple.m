@@ -26,11 +26,11 @@ set(groot,'defaultLineLineWidth',3)
 
 %1= input 
 %2= after compressor
-%4= left bottom of heat exchanger hole
-%5= after flowing through sand at bottom of hole
-%6= right before turbine
-%7= after turbine
-%9= after cooler (same conditions as one with different mass flow)
+%3= left bottom of heat exchanger hole
+%4= after flowing through sand at bottom of hole
+%5= right before turbine
+%6= after turbine
+%7= after cooler (same conditions as one with different mass flow)
 
 %Kept same variable naming convention as recuperator for clarity
 
@@ -58,8 +58,8 @@ P7=P1;
 s1= s(T1,P1);
 
 % Trading Variables
-P2= (50:30:110)*1e6; % Pa
-m2= 7:1:25; %kg/s
+P2= (23:3:29)*1e6; % Pa
+m2= 7:.2:14; %kg/s
 Pratiocomp= P2/P1;
 
 figure
@@ -177,13 +177,15 @@ Tavg_turb= (T5(I,J)+T6(I,J))/2;
 Pavg_turb= (P5(I,J)+P6)/2;
 
 %Isentropic Head
-His_comp= gammas(Tavg_comp,Pavg_comp)/(gammas(Tavg_comp,Pavg_comp)-1)*Pavg_comp...
-    /rho(Tavg_comp, Pavg_comp)*((P2(I)/P1)^((gammas(Tavg_comp,Pavg_comp)-1)/...
-    gammas(Tavg_comp,Pavg_comp))-1); %equation from textbook
-
-His_turb= -gammas(Tavg_turb,Pavg_turb)/(gammas(Tavg_turb,Pavg_turb)-1)*Pavg_turb...
-    /rho(Tavg_turb, Pavg_turb)*((P7/P5(I,J))^((gammas(Tavg_turb,Pavg_turb)-1)/...
-    gammas(Tavg_turb,Pavg_turb))-1);
+% His_comp= gammas(Tavg_comp,Pavg_comp)/(gammas(Tavg_comp,Pavg_comp)-1)*Pavg_comp...
+%     /rho(Tavg_comp, Pavg_comp)*((P2(I)/P1)^((gammas(Tavg_comp,Pavg_comp)-1)/...
+%     gammas(Tavg_comp,Pavg_comp))-1); %equation from textbook
+% 
+% His_turb= -gammas(Tavg_turb,Pavg_turb)/(gammas(Tavg_turb,Pavg_turb)-1)*Pavg_turb...
+%     /rho(Tavg_turb, Pavg_turb)*((P7/P5(I,J))^((gammas(Tavg_turb,Pavg_turb)-1)/...
+%     gammas(Tavg_turb,Pavg_turb))-1);
+His_comp= (h2(I,J)-h1)/9.81;
+His_turb= (h5(I,J)-h6(I,J))/9.81;
 
 
 
@@ -200,8 +202,8 @@ Ns1turb2=N1*2*pi/60*sqrt(Vdot_turb)/(His_turb*9.81)^.75; %WHICH ONE IS RIGHT
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Case 2
 %Nstarget= 300; 
-N2=1000:100:10000; %set range of RPMs to try and find Ns?
-D2= .1:.2:5;
+N2=1000:100:30000; %set range of RPMs to try and find Ns?
+D2= .05:.05:1;
 
 Ns2comp= N2*sqrt(Vdot_comp)/His_comp^.75;
 Ns2turb= N2*sqrt(Vdot_turb)/His_turb^.75;
@@ -279,7 +281,7 @@ set(gca,'XScale','log','YScale','log')
 
 %% P h diagram
 
-hvec= [h1 h2(I,J) h_T(T3(I,J),P3(I,J)) h_T(T4(I,J), P4(I,J)) h5(I,J) h6(I,J) h1];
+hvec= [h1 h2(I,J) h_T(T3(I,J),P3(I,J)) h_T(T4(I,J), P4(I,J)) h5(I,J) h6(I,J) h1]/1e3;
 Pvec= [P1 P2(I) P3(I,J) P4(I,J) P5(I,J) P6 P1];
 
 %figure
@@ -293,7 +295,7 @@ legend('Liquid' ,'Gas', 'Supercritical' ,'Mixed' ,'1-2', '2-3', '3-4', '4-5' ,'5
 %plot(hvec/1000, Pvec/1e6)
 xlabel('Enthaply (kJ/kg)')
 ylabel('Pressure (MPa)')
-title('P-h Power Cycle Diagram')
+title(['P-h Power Cycle Diagram at P2= ' num2str(P2(I)/1e6) 'MPa and m2=' num2str(m2(J)) 'kg/s'])
 
 %% Functions
 

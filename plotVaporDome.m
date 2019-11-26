@@ -38,16 +38,16 @@ for i = 1:length(p)
             X(i,j) = refpropm('X','H',h(j), 'P',p(i), 'CO2');
             if Q(i,j) < .01 
                 liquid1 = [p(i)/1e3 liquid1 ];
-                liquid2 = [h(j) liquid2 ];
+                liquid2 = [h(j)/1e3 liquid2 ];
             elseif Q(i,j) >= .01 && Q(i,j) <=1
                 mixed1 = [p(i)/1e3 mixed1];
-                mixed2 = [h(j) mixed2 ];
+                mixed2 = [h(j)/1e3 mixed2 ];
             elseif Q(i,j) == 998 || Q(i,j) == -998 || (Q(i,j) > 1 && Q(i,j)< 5)
                 gas1 = [p(i)/1e3 gas1 ];
-                gas2 = [h(j) gas2 ];
+                gas2 = [h(j)/1e3 gas2 ];
             else
                 sup1 = [p(i)/1e3 sup1 ];
-                sup2 = [h(j) sup2 ];
+                sup2 = [h(j)/1e3 sup2 ];
             end
         else
             %hcrit = 2.5e5
@@ -55,10 +55,10 @@ for i = 1:length(p)
             
            if h(j)<2.53e5
                liquid1 = [p(i)/1e3 liquid1 ];
-               liquid2 = [h(j) liquid2 ];
+               liquid2 = [h(j)/1e3 liquid2 ];
            else
                sup1 = [p(i)/1e3 sup1 ];
-               sup2 = [h(j) sup2 ];
+               sup2 = [h(j)/1e3 sup2 ];
            end
            
         end
