@@ -59,7 +59,17 @@ function [current_press, pressure_loss, gravity_gain, temp] = pressure_drop_down
             velo_diff = (velo2^2 - velo1^2)/2;
             
             % Gravity, negative delta l since 2 is below 1
-            p2 = current_pressure(i-1) * exp((-1/(R * temp(i))) * (velo_diff +  gravity * -1 * delta_l));
+            
+            % Gravity, negative delta l since 2 is below 1
+            % Change to P/Rho Z * G
+            % Average p and rho to get Z
+            % Z in refprop
+            Z = refpropm('Z','T',temp(i),'P',current_pressure(i)/1e3, 'CO2');
+            comp_const = current_pressure(i-1)/(((rho2 + rho1(i))/2)* Z);            
+            %p2 = current_pressure(i-1) * exp((-1/(R * temp(i))) * (velo_diff +  gravity * -1 * delta_l));
+            p2 = current_pressure(i-1) * exp((-1/(comp_const)) * (velo_diff +  gravity * -1 * delta_l));
+            
+            %p2 = current_pressure(i-1) * exp((-1/(R * temp(i))) * (velo_diff +  gravity * -1 * delta_l));
             gg = p2 - current_pressure(i-1);
             
             %cp2(i) = cp2(i-1) +  rho1(i) * ((velo1^2 - velo2^2) * 1/2 + gravity * delta_l) - pressure_drop(i); 

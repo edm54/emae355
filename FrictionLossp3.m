@@ -41,7 +41,7 @@ md = 3.24 : 1 : 15.24;
 md = 5:2:13
 for p2  = 25e6 :5e6:50e6
     for j = 1:length(md)
-        [p3(i,j), friction_loss_down(i,j), gravity_gain_down(i,j), temp_down] = pressure_drop_down(md(j), p2);       
+        [p3(i,j), friction_loss_down(i,j), gravity_gain_down(i,j), temp_down] = pressure_drop_down(md(j), p2, 303);       
         
         temp_bot(i,j) = temp_down(end)
         density(i,j) = refpropm('D','T',Tb,'P',p3(i,j)/ 1e3, 'CO2');
@@ -181,14 +181,14 @@ figure
 plot(md, delta_p)
 xlabel('Mass Flow Rate, Down')
 ylabel('Delta P (pa)')
-title('Delta P Accross Sand vs Mass Flow Rate for various P3')
+title('Delta P Accross Sand vs Mass Flow Rate for various P2')
 legend(legendCell)
 %%
 figure
 plot(md, p5)
 xlabel('Mass Flow Rate, Down')
 ylabel('P5 (pa)')
-title('P5 vs Mass Flow Rate for various P3')
+title('P5 vs Mass Flow Rate for various P2')
 legend(legendCell)
 
 %%
@@ -203,20 +203,20 @@ figure
 plot(md, density)
 xlabel('Mass Flow Rate, Down')
 ylabel('Density')
-title('Density vs Mass Flow Rate for various P3')
+title('Density vs Mass Flow Rate for various P2')
 legend(legendCell)
 %%
 figure
 plot(md, dynamic_v)
 xlabel('Mass Flow Rate, Down')
 ylabel('Dyn V')
-title('Dyn V vs Mass Flow Rate for various P3')
+title('Dyn V vs Mass Flow Rate for various P2')
 legend(legendCell)
 
 figure
 plot(md, Q)
 xlabel('Mass Flow Rate, Down')
 ylabel('Vol Flow Rate')
-title('Vol Flow Rate vs Mass Flow Rate for various P3')
+title('Vol Flow Rate vs Mass Flow Rate for various P2')
 legend(legendCell)
 

@@ -57,7 +57,12 @@ function [cp, pressure_loss, gravity_gain_total, temp_final] = pressure_drop_up(
                 velo_diff = (velo2^2 - velo1^2)/2;
                 % Gravity
                 
-                 p2 = current_pressure(i-1) * exp((-1/(R * temp(i))) * (velo_diff +  gravity * delta_l));
+                Z = refpropm('Z','T',temp(i),'P',current_pressure(i)/1e3, 'CO2');
+                comp_const = current_pressure(i-1)/(((rho2 + rho1(i))/2)* Z) ;           
+                %p2 = current_pressure(i-1) * exp((-1/(R * temp(i))) * (velo_diff +  gravity *  delta_l));
+                p2 = current_pressure(i-1) * exp((-1/(comp_const)) * (velo_diff +  gravity * delta_l));
+            
+                 %p2 = current_pressure(i-1) * exp((-1/(R * temp(i))) * (velo_diff +  gravity * delta_l));
                  gg(i) = current_pressure(i-1) - p2; 
                  gravity_gain(i) = gravity_gain(i-1) + current_pressure(i-1) - p2;
                  %current_pressure(i) = p2;
