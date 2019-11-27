@@ -18,6 +18,8 @@ function [cp, pressure_loss, gravity_gain_total, temp_final] = pressure_drop_up(
     delta_l = 1;
     t_bottom = 129 + 273;
     temp(1) = t_bottom;
+    
+    u = refpropm('U','T',t_bottom,'P',current_pressure/1e3, 'CO2');
     i = 2;
     direction = 2;
     gravity_gain = 0;
@@ -49,7 +51,7 @@ function [cp, pressure_loss, gravity_gain_total, temp_final] = pressure_drop_up(
 
                 head_loss(i) = (f(i) * delta_l * velo1^2) / (diameter * 2  * gravity);
                 pressure_drop(i) = rho1(i) * gravity * head_loss(i); %pa
-                
+                u(i) = abs(gravity * head_loss(i)) + u(i-1);
                 current_pressure(i) = current_pressure(i-1) - pressure_drop(i);
                 rho2 = refpropm('D','T',temp(i),'P',current_pressure(i)/1e3, 'CO2');
                 velo2 = m_dot/(rho2 * area);
@@ -67,10 +69,10 @@ function [cp, pressure_loss, gravity_gain_total, temp_final] = pressure_drop_up(
                  gravity_gain(i) = gravity_gain(i-1) + current_pressure(i-1) - p2;
                  %current_pressure(i) = p2;
                  current_pressure(i) = current_pressure(i-1) - gg(i) - pressure_drop(i);
-                 
+                 temp(i-1) = refpropm('T','P',current_pressure(i-1)/1e3,'U',u(i), 'CO2');
                  output_temp = HT(m_dot, current_pressure(i-1),temp(i-1), delta_l, direction, current_pressure(i), height);
                  temp(i) = output_temp;
-                 
+                 u(i) = refpropm('U','T',temp(i),'P',current_pressure(i)/1e3, 'CO2');
             end
             pressure_loss = pressure_loss + pressure_drop(i);
             
@@ -80,6 +82,9 @@ function [cp, pressure_loss, gravity_gain_total, temp_final] = pressure_drop_up(
     end
     cp = current_pressure(end);
     gravity_gain_total = gravity_gain(end);
-    temp_final = temp(end);
+
+    %plot(1:length(u),u)
+    temp_final = temp(end)
+
 end
 

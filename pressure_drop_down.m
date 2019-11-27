@@ -15,7 +15,10 @@ function [current_press, pressure_loss, gravity_gain, temp] = pressure_drop_down
     cp2 = pressure1;
     i = 1;
     R = 188.92; % Ideal gas Constant
-    rho1 = refpropm('D','T',15+273,'P',current_pressure/1e3, 'CO2');
+    temp(1) = t_init;
+    rho1 = refpropm('D','T',t_init,'P',current_pressure/1e3, 'CO2');
+    
+    u = refpropm('U','T',t_init,'P',current_pressure/1e3, 'CO2');
     
     hgl1 = current_pressure(1)/(rho1 * gravity) + 3200;
     direction = 1;
@@ -29,7 +32,7 @@ function [current_press, pressure_loss, gravity_gain, temp] = pressure_drop_down
     % 3200 defined as underground
     i = 2;
 
-    temp(1) = t_init;
+   
     
     for height = 0 : delta_l : 3200 - delta_l
         
@@ -49,9 +52,11 @@ function [current_press, pressure_loss, gravity_gain, temp] = pressure_drop_down
             else
                 f(i) = 64/reynolds(i);
             end
-
+            
             head_loss(i) = (f(i) * delta_l * velo1^2) / (diameter * 2  * gravity);
             pressure_drop(i) = rho1(i) * gravity * head_loss(i); %pa
+            
+            u(i) = gravity * head_loss(i) + u(i-1);
             
             current_pressure(i) = current_pressure(i-1) - pressure_drop(i);
             rho2 = refpropm('D','T',temp(i),'P',current_pressure(i)/1e3, 'CO2');
@@ -74,9 +79,14 @@ function [current_press, pressure_loss, gravity_gain, temp] = pressure_drop_down
             
             %cp2(i) = cp2(i-1) +  rho1(i) * ((velo1^2 - velo2^2) * 1/2 + gravity * delta_l) - pressure_drop(i); 
             current_pressure(i) = current_pressure(i-1) + gg -  pressure_drop(i);
+            
+            temp(i-1) = refpropm('T','P',current_pressure(i)/1e3,'U',u(i), 'CO2');
+            
             output_temp = HT(m_dot, current_pressure(i-1),temp(i-1), delta_l, direction, current_pressure(i), height);
             temp(i) = output_temp;
+            u(i) = refpropm('U','T',temp(i),'P',current_pressure(i)/1e3, 'CO2');
         end
+        
         gravity_gain = gravity_gain + gg; 
         pressure_loss = pressure_loss + pressure_drop(i);
            
