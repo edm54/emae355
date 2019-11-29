@@ -42,8 +42,8 @@ set(groot,'defaultLineLineWidth',3)
 
 
 %Initial Guesses: Will need to look at chart
-Eff_comp= .8;
-Eff_turb= .8;
+Eff_comp= .7;
+Eff_turb= .7;
 %UA_cool= 30; 
 
 % Knowns
@@ -58,14 +58,16 @@ P7=P1;
 s1= s(T1,P1);
 
 % Trading Variables
-P2= (23:3:29)*1e6; % Pa
-m2= 7:.2:14; %kg/s
+P2= (8:.2:9)*1e6; % Pa
+m2= .5:.1:2.5; %kg/s
 Pratiocomp= P2/P1;
 
 figure
 legendstr= {};
 
 T2=ones(length(P2), length(m2))*303; %initial T2 estimate
+P5no=6.02e6;
+T5no= 334; %these temps and pressures will be set if P3<32.5
 for i= 1:length(P2)
     for j=1:length(m2)
           m3(j)= m1+m2(j);
@@ -76,10 +78,18 @@ for i= 1:length(P2)
             if j==1
             [P5(i,j), T5(i,j), P3(i,j), T3(i,j), P4(i,j), T4(i,j)]...
                 = findP5(P2(i),m3(j), T2(i,j));
+                if P5(i,j)==ISNAN
+                P5(i,j)=P5no;
+                T5(i,j)=T5no;
+                end
             else
                 
             [P5(i,j), T5(i,j), P3(i,j), T3(i,j), P4(i,j), T4(i,j)]...
                 = findP5(P2(i),m3(j), T2(i,j-1));
+                if P5(i,j)==ISNAN
+                P5(i,j)=P5no;
+                T5(i,j)=T5no;
+                end
             end
         catch ME
 %           P5(i,j)=NaN;
@@ -163,11 +173,10 @@ end
 legend('turb=20',  'comp=20', 'turb=40','comp=40', 'turb=60', 'comp=60')
 grid
 %legend(legendstr)
-
-%% Choosing Machinery
 max= max(max(Pdiff));
 [I,J]=find(Pdiff==max);
 
+%% Choosing Machinery
 %Find machinery stuff using the best pressure and mdot case
 
 Tavg_comp= (T1+T2(I,J))/2;
@@ -189,8 +198,8 @@ His_turb= (h5(I,J)-h6(I,J))/9.81;
 
 
 
-Vdot_comp= m3(J)*rho(T1,P1);
-Vdot_turb= m2(J)*rho(T6(I,J),P7);
+Vdot_comp= 2*m3(J)/(rho(T1,P1)+rho(T2(I,J), P2(I)));
+Vdot_turb= m2(J)*2/(rho(T6(I,J),P7)+rho(T5(I,J), P5(I,J)));
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Case 1
 N1=3600;
@@ -200,10 +209,10 @@ Ns1turb= N1*sqrt(Vdot_turb)/His_turb^.75;
 Ns1turb2=N1*2*pi/60*sqrt(Vdot_turb)/(His_turb*9.81)^.75; %WHICH ONE IS RIGHT
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Case 2
+% Case 2
 %Nstarget= 300; 
-N2=1000:100:30000; %set range of RPMs to try and find Ns?
-D2= .05:.05:1;
+N2=1000:1000:150000; %set range of RPMs to try and find Ns?
+D2= .01:.01:.5;
 
 Ns2comp= N2*sqrt(Vdot_comp)/His_comp^.75;
 Ns2turb= N2*sqrt(Vdot_turb)/His_turb^.75;

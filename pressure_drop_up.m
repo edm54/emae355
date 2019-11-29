@@ -84,7 +84,7 @@ function [cp, pressure_loss, gravity_gain_total, temp_final] = pressure_drop_up(
     gravity_gain_total = gravity_gain(end);
 
     %plot(1:length(u),u)
-    temp_final = temp(end)
+    temp_final = temp(end);
 
 end
 
