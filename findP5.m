@@ -6,15 +6,14 @@ L = 112 ;% m
 Pa = 32.5e6 ;
 Tb = 129 + 273; % Temp at bottom
 
-[p3, friction_loss_down, gravity_gain_down, temp_down] = pressure_drop_down(md, p2, t2);
-
-if p3 < 32.5
-    p3 = NaN
-    p4 = NaN
-    p5= NaN
-    t5 = NaN
-    t4 = NaN
-    t3 = NaN
+[p3, friction_loss_down, gravity_gain_down, temp_down]= pressure_drop_down(md,p2,t2);
+if p3 < 32.5e6
+    p3 = NaN;
+    p4 = NaN;
+    p5= NaN;
+    t5 = NaN;
+    t4 = NaN;
+    t3 = NaN;
 else
     density = refpropm('D','T',Tb,'P',p3/ 1e3, 'CO2');
     dynamic_v = refpropm('V','T',Tb,'P',p3/1e3, 'CO2');

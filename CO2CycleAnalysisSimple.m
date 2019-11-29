@@ -58,37 +58,37 @@ P7=P1;
 s1= s(T1,P1);
 
 % Trading Variables
-P2= (8:.2:9)*1e6; % Pa
-m2= .5:.1:2.5; %kg/s
+P2= (20:5:30)*1e6; % Pa
+m2= 1.5:2:11.5; %kg/s
 Pratiocomp= P2/P1;
 
 figure
 legendstr= {};
 
 T2=ones(length(P2), length(m2))*303; %initial T2 estimate
-P5no=6.02e6;
-T5no= 334; %these temps and pressures will be set if P3<32.5
+% P5no=6.02e6;
+% T5no= 334; %these temps and pressures will be set if P3<32.5
 for i= 1:length(P2)
     for j=1:length(m2)
           m3(j)= m1+m2(j);
         %Big Function
 %               [P5(i,j), T5(i,j), P3(i,j), T3(i,j), P4(i,j), T4(i,j)]...
-%             = findP5(P2(i),m3(j));
-        try
+%             = findP5(P2(i),m3(j),  T2(i,j));
+         try
             if j==1
             [P5(i,j), T5(i,j), P3(i,j), T3(i,j), P4(i,j), T4(i,j)]...
                 = findP5(P2(i),m3(j), T2(i,j));
-                if P5(i,j)==ISNAN
-                P5(i,j)=P5no;
-                T5(i,j)=T5no;
+                if isnan(P5(i,j))==1
+                P5(i,j)=P1;
+                T5(i,j)=T1;
                 end
             else
                 
             [P5(i,j), T5(i,j), P3(i,j), T3(i,j), P4(i,j), T4(i,j)]...
                 = findP5(P2(i),m3(j), T2(i,j-1));
-                if P5(i,j)==ISNAN
-                P5(i,j)=P5no;
-                T5(i,j)=T5no;
+                if isnan(P5(i,j))==1
+                P5(i,j)=P1;
+                T5(i,j)=T1;
                 end
             end
         catch ME
