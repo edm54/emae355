@@ -34,12 +34,15 @@ A = 20 ;% m^-1
 L = 112 ;% m
 Pa = 32.5e6 ;
 Tb = 129 + 273; % Temp at bottom
-p2 = 25e6 :5e6:50e6;
+p2 = 27e6 :5e6:52e6;
 md = 3.24 : 1 : 15.24;
 %md = 10
 %for p3  = 20e6 :10e6:80e6
-md = 5:2:13
-for p2  = 25e6 :5e6:50e6
+md = 5:1:15
+
+for p2  = 27e6 :5e6:42e6
+    %29.5e6:5e6:34.5e6
+    %25e6 :5e6:45e6
     for j = 1:length(md)
         [p3(i,j), friction_loss_down(i,j), gravity_gain_down(i,j), temp_down] = pressure_drop_down(md(j), p2, 303);       
         
@@ -48,8 +51,19 @@ for p2  = 25e6 :5e6:50e6
         dynamic_v(i,j) = refpropm('V','T',Tb,'P',p3(i,j)/1e3, 'CO2');
       
         final_mdot(j) = md(j) - 3.24;
-        Q(i,j) = final_mdot(j) / density(i,j);
-        delta_p(i,j) = Q(i,j) * dynamic_v(i,j) * L/(k*A);
+        %Q(i,j) = final_mdot(j) / density(i,j);
+        %delta_p(i,j) = Q(i,j) * dynamic_v(i,j) * L/(k*A);
+        
+        temp_grad = (129+273 -temp_bot(i,j) )/3200;
+        delta_p(i,j) = 0;
+        for x = 1:L
+            temp = temp_bot(i,j) + temp_grad*x;
+            dens = refpropm('D','T',temp,'P',p3(i,j)/ 1e3, 'CO2');
+            dy_v = refpropm('V','T',temp,'P',p3(i,j)/1e3, 'CO2');
+            Qi = final_mdot(j)/ dens;
+            delta_p(i,j) = delta_p(i,j) + Qi * dy_v* 1/(k*A);   
+        end
+        
         
         p4(i,j) = p3(i,j) - delta_p(i,j);
         [p5(i,j), friction_loss_up(i,j), gravity_loss_up(i,j), temp_top(i,j)] = pressure_drop_up(final_mdot(j), p4(i,j));   
@@ -60,7 +74,7 @@ for p2  = 25e6 :5e6:50e6
 end
 %%
 for iN = 1:length(leg)
-      legendCell{iN} = num2str(leg(iN),'P2=%-d');
+      legendCell{iN} = num2str(leg(iN),'P2=%-d MPa');
 end
  
 %%
@@ -110,10 +124,12 @@ ylabel('Pressure gain (Pa)')
 %legend('10' ,'20', '30', '40' ,'50')
 legend(legendCell)
 %%
+
 figure
+grid
 hold on 
 plot(md, gravity_gain_down - gravity_loss_up)
-title('Gravity gain (difference)')
+title('Total Pressure Gain due to Gravity')
 xlabel('Mass Flow Rate Down(kg/s)')
 ylabel('Pressure gain (Pa)')
 %legend('10' ,'20', '30', '40' ,'50')
@@ -131,15 +147,16 @@ ylabel('Pressure Drop (Pa)')
 %legend('10' ,'20', '30', '40' ,'50')
 legend(legendCell)
 
-
+%%
 figure
 hold on 
+grid
 plot(md, friction_loss_up + friction_loss_down)
-title('Pressure loss due to friction in a pipe, both')
+title('Pressure Loss Due to Friction in a Pipe, Both Directions')
 xlabel('Mass Flow Rate Down(kg/s)')
 ylabel('Pressure Drop (Pa)')
 legend(legendCell)
-
+%%
 figure
 hold on 
 plot(md, friction_loss_up)
@@ -181,7 +198,7 @@ figure
 plot(md, delta_p)
 xlabel('Mass Flow Rate, Down')
 ylabel('Delta P (pa)')
-title('Delta P Accross Sand vs Mass Flow Rate for various P2')
+title('Pressure Drop Accross Sand vs Mass Flow Rate for Various P2')
 legend(legendCell)
 %%
 figure
