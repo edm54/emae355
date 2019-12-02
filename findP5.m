@@ -6,9 +6,9 @@ function [p5, t5, p3, t3, p4, t4] = findP5(p2,md, t2)
     Pa = 32.5e6 ;
     Tb = 129 + 273; % Temp at bottom
 
-    [p3, friction_loss_down, gravity_gain_down, temp_down] = pressure_drop_down(md, p2, t2);
 
-    if p3 < 32.5
+    [p3, friction_loss_down, gravity_gain_down, temp_down]= pressure_drop_down(md,p2,t2);
+    if p3 < 32.5e6
         p3 = NaN;
         p4 = NaN;
         p5= NaN;
@@ -16,6 +16,7 @@ function [p5, t5, p3, t3, p4, t4] = findP5(p2,md, t2)
         t4 = NaN;
         t3 = NaN;
     else
+
 
        t3 = temp_down(end);
        temp_grad = (129+273 - t3)/L;
