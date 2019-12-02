@@ -58,8 +58,8 @@ P7=P1;
 s1= s(T1,P1);
 
 % Trading Variables
-P2= (20:5:30)*1e6; % Pa
-m2= 1.5:2:11.5; %kg/s
+P2= (27.5:2:31.5)*1e6; % Pa
+m2= 7:.1:14; %kg/s
 Pratiocomp= P2/P1;
 
 figure
@@ -94,8 +94,10 @@ for i= 1:length(P2)
         catch ME
 %           P5(i,j)=NaN;
 %           T5(i,j)=NaN;
-          P5(i,j)=P5(i,j-1);
-          T5(i,j)=T5(i,j-1);
+%           P5(i,j)=P5(i,j-1);
+%           T5(i,j)=T5(i,j-1);
+                P5(i,j)=P1;
+                T5(i,j)=T1;
         end
         
 %         if j>1
@@ -157,7 +159,7 @@ for i= 1:length(P2)
     %legendstr= {num2str(P2(i)/1000) legendstr};
 end
 legend(legendstr)
-xlabel('Mass Flow Through Turbine')
+xlabel('Mass Flow Through Turbine (kg/s)')
 ylabel('Net Power (kW)')
 title('Power vs Mass Flow with varying Initial Pressures')
 %axis([ m2(1) m2(end) 0 100])
@@ -304,7 +306,7 @@ legend('Liquid' ,'Gas', 'Supercritical' ,'Mixed' ,'1-2', '2-3', '3-4', '4-5' ,'5
 %plot(hvec/1000, Pvec/1e6)
 xlabel('Enthaply (kJ/kg)')
 ylabel('Pressure (MPa)')
-title(['P-h Power Cycle Diagram at P2= ' num2str(P2(I)/1e6) 'MPa and m2=' num2str(m2(J)) 'kg/s'])
+title(['P-h Power Cycle Diagram at P2= ' num2str(P2(I)/1e6) 'MPa and m3=' num2str(m3(J)) 'kg/s'])
 
 %% Functions
 
